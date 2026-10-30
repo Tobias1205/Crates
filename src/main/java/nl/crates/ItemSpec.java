@@ -9,6 +9,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
@@ -34,9 +35,13 @@ public final class ItemSpec {
     public final String trimPattern;
     /** Als dit item gewonnen wordt, krijgt de hele server een bericht. */
     public final boolean broadcast;
+    /** Vliegduur van een firework rocket (1-3 in vanilla, 0 = niet instellen). */
+    public final int flightDuration;
 
     public ItemSpec(Material material, String name, List<String> lore, Map<Enchantment, Integer> enchants,
-                    boolean glow, int amount, String trimMaterial, String trimPattern, boolean broadcast) {
+                    boolean glow, int amount, String trimMaterial, String trimPattern, boolean broadcast,
+                    int flightDuration) {
+        this.flightDuration = flightDuration;
         this.material = material;
         this.name = name;
         this.lore = lore;
@@ -49,7 +54,7 @@ public final class ItemSpec {
     }
 
     public static ItemSpec simple(Material material, String name) {
-        return new ItemSpec(material, name, List.of(), Map.of(), false, 1, null, null, false);
+        return new ItemSpec(material, name, List.of(), Map.of(), false, 1, null, null, false, 0);
     }
 
     public static ItemSpec of(ConfigurationSection s, Material fallback, Logger log) {
@@ -90,8 +95,9 @@ public final class ItemSpec {
         }
 
         int amount = Math.max(1, Math.min(64, s.getInt("amount", 1)));
+        int flight = Math.max(0, Math.min(127, s.getInt("flight-duration", 0)));
         return new ItemSpec(mat, name, lore, enchants, s.getBoolean("glow", false), amount, tm, tp,
-                s.getBoolean("broadcast", false));
+                s.getBoolean("broadcast", false), flight);
     }
 
     private static TrimMaterial lookupMaterial(String n) {
@@ -125,6 +131,7 @@ public final class ItemSpec {
             TrimPattern tp = lookupPattern(trimPattern);
             if (tm != null && tp != null) armor.setTrim(new ArmorTrim(tm, tp));
         }
+        if (flightDuration > 0 && meta instanceof FireworkMeta rocket) rocket.setPower(flightDuration);
         if (glow) meta.setEnchantmentGlintOverride(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);

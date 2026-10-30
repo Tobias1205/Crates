@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 /** Eén crate zoals die in crates.yml staat. */
 public final class Crate {
 
+    /** Vindt "which of the 6" in de filler-lore, zodat het getal vervangen kan worden. */
+    private static final java.util.regex.Pattern WHICH_OF = java.util.regex.Pattern.compile("(?i)(which of the )\\d+");
+
     public enum Effect { CHOOSE, ROULETTE }
 
     public record Reward(int slot, ItemSpec icon, double chance, List<String> commands) {
@@ -119,6 +122,14 @@ public final class Crate {
             return null;
         }
 
+        // De glass panes zeggen "which of the N you want": N wordt hier uit het echte aantal rewards gehaald,
+        // dus het klopt altijd, ook als je rewards toevoegt of weghaalt. %rewards% en {rewards} werken ook.
+        if (filler != null) {
+            String count = String.valueOf(rewards.size());
+            filler.lore.replaceAll(l -> WHICH_OF.matcher(l.replace("%rewards%", count).replace("{rewards}", count))
+                    .replaceAll(m -> m.group(1) + count));
+        }
+
         // Geen key-sectie in de config? Dan wordt de naam afgeleid van de filler-naam:
         // "&3ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ" -> "&3ᴘʀɪᴍᴇ ᴋᴇʏ" (ᴄʀᴀᴛᴇ en ᴋᴇʏ in small caps, als unicode-escapes)
         ConfigurationSection ks = s.getConfigurationSection("key");
@@ -130,7 +141,7 @@ public final class Crate {
             String keyName = base.replaceAll("(?i)ᴄʀᴀᴛᴇ\\s*$", "ᴋᴇʏ");
             if (keyName.equals(base)) keyName = base + " ᴋᴇʏ";
             key = new ItemSpec(Material.TRIPWIRE_HOOK, keyName, List.of("&7Use this key at its crate."),
-                    java.util.Map.of(), true, 1, null, null, false);
+                    java.util.Map.of(), true, 1, null, null, false, 0);
         }
 
         return new Crate(id, title, effect, rows, fillerEnabled, filler, backEnabled, backSlot, back, holos, rewards, key);
