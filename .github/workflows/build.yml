@@ -1,0 +1,111 @@
+name: Build
+
+# Versie: MAJOR.MINOR.PATCH, begint bij 1.1.1 (staat in pom.xml)
+#
+#   gewone push naar main        -> kleine verandering:  1.1.1 -> 1.1.2
+#   commit met [minor] erin      -> grote verandering:   1.1.2 -> 1.2.1
+#   commit met [major] erin      -> hele grote:          1.2.1 -> 2.1.1
+#
+# Handmatig starten kan ook (Actions -> Build -> Run workflow) met de keuze patch/minor/major.
+# Pull requests worden alleen gebouwd, zonder versie te verhogen.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Soort verandering'
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Bepaal nieuwe versie
+        if: github.event_name != 'pull_request'
+        id: version
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          INPUT_BUMP: ${{ github.event.inputs.bump }}
+        run: |
+          CURRENT=$(mvn -B -q -DforceStdout help:evaluate -Dexpression=project.version)
+          IFS=. read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          BUMP=patch
+          if [ -n "$INPUT_BUMP" ]; then
+            BUMP="$INPUT_BUMP"
+          elif echo "$COMMIT_MSG" | grep -qi '\[major\]'; then
+            BUMP=major
+          elif echo "$COMMIT_MSG" | grep -qi '\[minor\]'; then
+            BUMP=minor
+          fi
+
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=1; PATCH=1 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=1 ;;
+            *)     PATCH=$((PATCH + 1)) ;;
+          esac
+
+          NEW="$MAJOR.$MINOR.$PATCH"
+          echo "Versie: $CURRENT -> $NEW ($BUMP)"
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+          echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+
+      - name: Versie in pom.xml aanpassen
+        if: github.event_name != 'pull_request'
+        run: mvn -B -q versions:set -DnewVersion="${{ steps.version.outputs.new }}" -DgenerateBackupPoms=false
+
+      - name: Bouwen
+        run: mvn -B clean package
+
+      - name: Jar bewaren
+        uses: actions/upload-artifact@v4
+        with:
+          name: Crates
+          path: target/Crates-*.jar
+          if-no-files-found: error
+
+      - name: Versie committen en taggen
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pom.xml
+          git commit -m "chore: release v${{ steps.version.outputs.new }} [skip ci]"
+          git tag "v${{ steps.version.outputs.new }}"
+          git push origin HEAD
+          git push origin "v${{ steps.version.outputs.new }}"
+
+      - name: Release maken
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.version.outputs.new }}" \
+            "target/Crates-${{ steps.version.outputs.new }}.jar" \
+            --title "Crates ${{ steps.version.outputs.new }}" \
+            --generate-notes
