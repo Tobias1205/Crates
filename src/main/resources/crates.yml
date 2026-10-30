@@ -1,0 +1,452 @@
+# Elke sectie die eindigt op "-crate" wordt een crate. De naam voor "-crate" is het id
+# dat je in /crates link <id> gebruikt (dus amethyst-crate -> /crates link amethyst).
+#
+# effect: CHOOSE    -> de speler kiest zelf een reward in de GUI (1 key per keuze)
+# effect: ROULETTE  -> rechtsklik met een key draait een roulette, de uitkomst volgt "chance" (gewicht)
+#                      linksklik op het blok laat alleen de rewards zien
+#
+# Alleen amethyst-crate is echt ingevuld. common, gold, crimson en prime hebben
+# placeholder-rewards zodat je ze meteen kunt testen: vervang die door jullie eigen rewards.
+
+amethyst-crate:
+  key:
+    material: TRIPWIRE_HOOK
+    name: '&#A20AD6ᴀᴍᴇᴛʜʏsᴛ ᴋᴇʏ'
+    glow: true
+    lore:
+    - '&7Right-click the ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+    - '&7to choose a reward.'
+  inventory:
+    name: '&8ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#A20AD6ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7With a ᴀᴍᴇᴛʜʏsᴛ ᴋᴇʏ you can choose'
+      - '&7which of the 6 you want.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+      - null
+    '2':
+      height: 1.5
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 10
+      icon:
+        material: NETHERITE_AXE
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ᴀxᴇ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Chops a whole tree at once
+        - '§7Right-click a log: strips the whole tree'
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          sharpness: 5
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_axe 3d 1'
+    '2':
+      slot: 11
+      icon:
+        material: NETHERITE_PICKAXE
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ᴘɪᴄᴋᴀxᴇ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Breaks a 3x3 area
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_pickaxe 3d 1'
+    '3':
+      slot: 12
+      icon:
+        material: NETHERITE_SHOVEL
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ꜱʜᴏᴠᴇʟ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Breaks a 3x3 area
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_shovel 3d 1'
+    '4':
+      slot: 13
+      icon:
+        material: WATER_BUCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ᴡᴀᴛᴇʀ ʙᴜᴄᴋᴇᴛ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_water_bucket infinite 1'
+    '5':
+      slot: 14
+      icon:
+        material: LAVA_BUCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ʟᴀᴠᴀ ʙᴜᴄᴋᴇᴛ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_lava_bucket infinite 1'
+    '6':
+      slot: 15
+      icon:
+        material: ENDER_PEARL
+        name: §5ɪɴꜰɪɴɪᴛᴇ ᴇɴᴅᴇʀ ᴘᴇᴀʀʟ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_enderpearl infinite 1'
+    '7':
+      slot: 16
+      icon:
+        material: FIREWORK_ROCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ꜰɪʀᴇᴡᴏʀᴋ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_firework_3 infinite 1'
+
+# ---------------------------------------------------------------------------
+# PLACEHOLDERS: vervang de rewards en commands hieronder door jullie eigen.
+# ---------------------------------------------------------------------------
+
+common-crate:
+  key:
+    material: TRIPWIRE_HOOK
+    name: '&#AAAAAAᴄᴏᴍᴍᴏɴ ᴋᴇʏ'
+    glow: false
+    lore:
+    - '&7Right-click the ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+    - '&7to open it.'
+  inventory:
+    name: '&8ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+    effect: ROULETTE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#AAAAAAᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7Open it with a ᴄᴏᴍᴍᴏɴ ᴋᴇʏ.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 11
+      icon:
+        material: IRON_INGOT
+        name: '&fɪʀᴏɴ ɪɴɢᴏᴛs'
+        lore:
+        - '&7x16'
+      chance: 40.0%
+      commands:
+      - 'give %player% iron_ingot 16'
+    '2':
+      slot: 12
+      icon:
+        material: GOLD_INGOT
+        name: '&6ɢᴏʟᴅ ɪɴɢᴏᴛs'
+        lore:
+        - '&7x8'
+      chance: 30.0%
+      commands:
+      - 'give %player% gold_ingot 8'
+    '3':
+      slot: 13
+      icon:
+        material: DIAMOND
+        name: '&bᴅɪᴀᴍᴏɴᴅs'
+        lore:
+        - '&7x4'
+      chance: 20.0%
+      commands:
+      - 'give %player% diamond 4'
+    '4':
+      slot: 14
+      icon:
+        material: EMERALD
+        name: '&aᴇᴍᴇʀᴀʟᴅs'
+        lore:
+        - '&7x8'
+      chance: 8.0%
+      commands:
+      - 'give %player% emerald 8'
+    '5':
+      slot: 15
+      icon:
+        material: NETHERITE_INGOT
+        name: '&8ɴᴇᴛʜᴇʀɪᴛᴇ ɪɴɢᴏᴛ'
+        lore:
+        - '&7x1'
+      chance: 2.0%
+      commands:
+      - 'give %player% netherite_ingot 1'
+
+gold-crate:
+  key:
+    material: TRIPWIRE_HOOK
+    name: '&#FFD700ɢᴏʟᴅ ᴋᴇʏ'
+    glow: true
+    lore:
+    - '&7Right-click the ɢᴏʟᴅ ᴄʀᴀᴛᴇ'
+    - '&7to open it.'
+  inventory:
+    name: '&8ɢᴏʟᴅ ᴄʀᴀᴛᴇ'
+    effect: ROULETTE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#FFD700ɢᴏʟᴅ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7Open it with a ɢᴏʟᴅ ᴋᴇʏ.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 11
+      icon:
+        material: GOLD_BLOCK
+        name: '&6ɢᴏʟᴅ ʙʟᴏᴄᴋs'
+        lore:
+        - '&7x8'
+      chance: 35.0%
+      commands:
+      - 'give %player% gold_block 8'
+    '2':
+      slot: 12
+      icon:
+        material: DIAMOND
+        name: '&bᴅɪᴀᴍᴏɴᴅs'
+        lore:
+        - '&7x16'
+      chance: 30.0%
+      commands:
+      - 'give %player% diamond 16'
+    '3':
+      slot: 13
+      icon:
+        material: ENCHANTED_GOLDEN_APPLE
+        name: '&6ᴇɴᴄʜᴀɴᴛᴇᴅ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ'
+        lore:
+        - '&7x2'
+      chance: 20.0%
+      commands:
+      - 'give %player% enchanted_golden_apple 2'
+    '4':
+      slot: 14
+      icon:
+        material: NETHERITE_INGOT
+        name: '&8ɴᴇᴛʜᴇʀɪᴛᴇ ɪɴɢᴏᴛs'
+        lore:
+        - '&7x3'
+      chance: 12.0%
+      commands:
+      - 'give %player% netherite_ingot 3'
+    '5':
+      slot: 15
+      icon:
+        material: TOTEM_OF_UNDYING
+        name: '&eᴛᴏᴛᴇᴍ ᴏꜰ ᴜɴᴅʏɪɴɢ'
+        lore:
+        - '&7x1'
+      chance: 3.0%
+      commands:
+      - 'give %player% totem_of_undying 1'
+
+crimson-crate:
+  key:
+    material: TRIPWIRE_HOOK
+    name: '&#DC143Cᴄʀɪᴍsᴏɴ ᴋᴇʏ'
+    glow: true
+    lore:
+    - '&7Right-click the ᴄʀɪᴍsᴏɴ ᴄʀᴀᴛᴇ'
+    - '&7to choose a reward.'
+  inventory:
+    name: '&8ᴄʀɪᴍsᴏɴ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#DC143Cᴄʀɪᴍsᴏɴ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7With a ᴄʀɪᴍsᴏɴ ᴋᴇʏ you can choose'
+      - '&7which reward you want.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 11
+      icon:
+        material: DIAMOND_BLOCK
+        name: '&cᴅɪᴀᴍᴏɴᴅ ʙʟᴏᴄᴋs'
+        lore:
+        - '&7x16'
+      chance: 100.0%
+      commands:
+      - 'give %player% diamond_block 16'
+    '2':
+      slot: 13
+      icon:
+        material: NETHERITE_INGOT
+        name: '&cɴᴇᴛʜᴇʀɪᴛᴇ ɪɴɢᴏᴛs'
+        lore:
+        - '&7x6'
+      chance: 100.0%
+      commands:
+      - 'give %player% netherite_ingot 6'
+    '3':
+      slot: 15
+      icon:
+        material: ENCHANTED_GOLDEN_APPLE
+        name: '&cᴇɴᴄʜᴀɴᴛᴇᴅ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇs'
+        lore:
+        - '&7x8'
+      chance: 100.0%
+      commands:
+      - 'give %player% enchanted_golden_apple 8'
+
+prime-crate:
+  key:
+    material: TRIPWIRE_HOOK
+    name: '&#00E5FFᴘʀɪᴍᴇ ᴋᴇʏ'
+    glow: true
+    lore:
+    - '&7Right-click the ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
+    - '&7to choose a reward.'
+  inventory:
+    name: '&8ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#00E5FFᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7With a ᴘʀɪᴍᴇ ᴋᴇʏ you can choose'
+      - '&7which reward you want.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 11
+      icon:
+        material: NETHERITE_BLOCK
+        name: '&bɴᴇᴛʜᴇʀɪᴛᴇ ʙʟᴏᴄᴋs'
+        lore:
+        - '&7x4'
+      chance: 100.0%
+      commands:
+      - 'give %player% netherite_block 4'
+    '2':
+      slot: 13
+      icon:
+        material: BEACON
+        name: '&bʙᴇᴀᴄᴏɴs'
+        lore:
+        - '&7x2'
+      chance: 100.0%
+      commands:
+      - 'give %player% beacon 2'
+    '3':
+      slot: 15
+      icon:
+        material: ELYTRA
+        name: '&bᴇʟʏᴛʀᴀ'
+        lore:
+        - '&7x1'
+      chance: 100.0%
+      commands:
+      - 'give %player% elytra 1'
