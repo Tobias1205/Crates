@@ -1,0 +1,141 @@
+amethyst-crate:
+  inventory:
+    name: '&8ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&#A20AD6ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7With a ᴀᴍᴇᴛʜʏsᴛ ᴋᴇʏ you can choose'
+      - '&7which of the 6 you want.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+      - null
+    '2':
+      height: 1.5
+      lines:
+      - null
+  back-button:
+    enable: false
+    displayname: '&#FF0000ᴄʟᴏꜱᴇ'
+    material: RED_STAINED_GLASS_PANE
+    slot: 18
+    lore:
+    - '&fClick to close'
+  rewards:
+    '1':
+      slot: 10
+      icon:
+        material: NETHERITE_AXE
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ᴀxᴇ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Chops a whole tree at once
+        - '§7Right-click a log: strips the whole tree'
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          sharpness: 5
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_axe 3d 1'
+    '2':
+      slot: 11
+      icon:
+        material: NETHERITE_PICKAXE
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ᴘɪᴄᴋᴀxᴇ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Breaks a 3x3 area
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_pickaxe 3d 1'
+    '3':
+      slot: 12
+      icon:
+        material: NETHERITE_SHOVEL
+        name: §5ᴀᴍᴇᴛʜʏꜱᴛ ꜱʜᴏᴠᴇʟ
+        lore:
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - §7Breaks a 3x3 area
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f3d
+        enchantments:
+          efficiency: 5
+          fortune: 3
+          mending: 1
+          unbreaking: 255
+      chance: 100.0%
+      commands:
+      - 'tools give %player% amethyst_shovel 3d 1'
+    '4':
+      slot: 13
+      icon:
+        material: WATER_BUCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ᴡᴀᴛᴇʀ ʙᴜᴄᴋᴇᴛ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_water_bucket infinite 1'
+    '5':
+      slot: 14
+      icon:
+        material: LAVA_BUCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ʟᴀᴠᴀ ʙᴜᴄᴋᴇᴛ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_lava_bucket infinite 1'
+    '6':
+      slot: 15
+      icon:
+        material: ENDER_PEARL
+        name: §5ɪɴꜰɪɴɪᴛᴇ ᴇɴᴅᴇʀ ᴘᴇᴀʀʟ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_enderpearl infinite 1'
+    '7':
+      slot: 16
+      icon:
+        material: FIREWORK_ROCKET
+        name: §5ɪɴꜰɪɴɪᴛᴇ ꜰɪʀᴇᴡᴏʀᴋ
+        lore:
+        - §7Never runs out
+        - §8▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        - '§7Self Destruct:'
+        - §f∞
+      chance: 100.0%
+      commands:
+      - 'tools give %player% infinite_firework_2 infinite 1'

@@ -1,6 +1,7 @@
 package nl.crates;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,11 +14,9 @@ import java.util.Locale;
 
 public final class CratesCommand implements TabExecutor {
 
-    private final CratesPlugin plugin;
     private final CrateManager manager;
 
-    public CratesCommand(CratesPlugin plugin, CrateManager manager) {
-        this.plugin = plugin;
+    public CratesCommand(CrateManager manager) {
         this.manager = manager;
     }
 
@@ -101,25 +100,31 @@ public final class CratesCommand implements TabExecutor {
                 crate, pos.world(), String.valueOf(pos.x()), String.valueOf(pos.y()), String.valueOf(pos.z())))));
     }
 
+    /** /crates key give <virtual|physical> <speler> <crate> [aantal] */
     private void key(CommandSender s, String[] a) {
-        if (a.length < 4 || !a[1].equalsIgnoreCase("give")) {
+        if (a.length < 5 || !a[1].equalsIgnoreCase("give")) {
             Msg.send(s, "usage_key");
             return;
         }
-        Player target = Bukkit.getPlayerExact(a[2]);
-        if (target == null) {
-            Msg.send(s, "player_not_found", a[2]);
+        boolean virtual;
+        if (a[2].equalsIgnoreCase("virtual")) {
+            virtual = true;
+        } else if (a[2].equalsIgnoreCase("physical")) {
+            virtual = false;
+        } else {
+            Msg.send(s, "usage_key");
             return;
         }
-        Crate c = manager.crate(a[3]);
+
+        Crate c = manager.crate(a[4]);
         if (c == null) {
-            Msg.send(s, "unknown_crate", a[3]);
+            Msg.send(s, "unknown_crate", a[4]);
             return;
         }
         int amount = 1;
-        if (a.length > 4) {
+        if (a.length > 5) {
             try {
-                amount = Integer.parseInt(a[4]);
+                amount = Integer.parseInt(a[5]);
             } catch (NumberFormatException ex) {
                 amount = -1;
             }
@@ -128,9 +133,29 @@ public final class CratesCommand implements TabExecutor {
                 return;
             }
         }
-        manager.giveKeys(target, c, amount);
-        Msg.send(s, "key_given", String.valueOf(amount), c.keyName(), target.getName());
-        Msg.send(target, "key_received", String.valueOf(amount), c.keyName());
+
+        Player online = Bukkit.getPlayerExact(a[3]);
+        String amountText = String.valueOf(amount);
+
+        if (virtual) {
+            // virtual keys kunnen ook naar spelers die offline zijn (zolang de server ze kent)
+            OfflinePlayer target = online != null ? online : Bukkit.getOfflinePlayerIfCached(a[3]);
+            if (target == null) {
+                Msg.send(s, "player_not_found", a[3]);
+                return;
+            }
+            manager.virtual().add(target.getUniqueId(), c.id, amount);
+            Msg.send(s, "key_given_virtual", amountText, c.keyName(), a[3]);
+            if (online != null) Msg.send(online, "key_received_virtual", amountText, c.keyName());
+        } else {
+            if (online == null) {
+                Msg.send(s, "player_not_found", a[3]);
+                return;
+            }
+            manager.giveKeys(online, c, amount);
+            Msg.send(s, "key_given_physical", amountText, c.keyName(), online.getName());
+            Msg.send(online, "key_received_physical", amountText, c.keyName());
+        }
     }
 
     private void open(CommandSender s, String[] a) {
@@ -158,13 +183,14 @@ public final class CratesCommand implements TabExecutor {
         if (a.length == 2 && (sub.equals("link") || sub.equals("open"))) return filter(manager.crateIds(), a[1]);
         if (sub.equals("key")) {
             if (a.length == 2) return filter(List.of("give"), a[1]);
-            if (a.length == 3) {
+            if (a.length == 3) return filter(List.of("virtual", "physical"), a[2]);
+            if (a.length == 4) {
                 List<String> names = new ArrayList<>();
                 for (Player p : Bukkit.getOnlinePlayers()) names.add(p.getName());
-                return filter(names, a[2]);
+                return filter(names, a[3]);
             }
-            if (a.length == 4) return filter(manager.crateIds(), a[3]);
-            if (a.length == 5) return filter(List.of("1", "8", "16", "64"), a[4]);
+            if (a.length == 5) return filter(manager.crateIds(), a[4]);
+            if (a.length == 6) return filter(List.of("1", "8", "16", "64"), a[5]);
         }
         return List.of();
     }

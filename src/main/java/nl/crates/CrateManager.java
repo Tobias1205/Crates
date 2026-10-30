@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -25,14 +26,24 @@ import org.bukkit.persistence.PersistentDataType;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-/** Houdt crates, gekoppelde blokken, hologrammen, keys en lopende roulettes bij. */
+/** Houdt crates, gekoppelde blokken, hologrammen, keys (physical en virtual) en lopende roulettes bij. */
 public final class CrateManager {
+
+    /** Slots in het confirm-menu (3 rijen): rood links, item midden, lime rechts. */
+    public static final int CANCEL_SLOT = 11;
+    public static final int ITEM_SLOT = 13;
+    public static final int CONFIRM_SLOT = 15;
+
+    private static final String[] DEFAULT_CRATES = {"amethyst", "common", "gold", "crimson", "prime"};
 
     public record BlockPos(String world, int x, int y, int z) {
         static BlockPos of(Block b) {
@@ -52,6 +63,7 @@ public final class CrateManager {
 
     private final CratesPlugin plugin;
     private final NamespacedKey keyTag;
+    private final VirtualKeys virtual;
     private final Map<String, Crate> crates = new LinkedHashMap<>();
     private final Map<BlockPos, String> links = new LinkedHashMap<>();
     private final Map<BlockPos, List<UUID>> holos = new HashMap<>();
@@ -60,7 +72,12 @@ public final class CrateManager {
     public CrateManager(CratesPlugin plugin) {
         this.plugin = plugin;
         this.keyTag = new NamespacedKey(plugin, "crate_key");
+        this.virtual = new VirtualKeys(plugin);
         this.dataFile = new File(plugin.getDataFolder(), "data.yml");
+    }
+
+    public VirtualKeys virtual() {
+        return virtual;
     }
 
     // ------------------------------------------------------------------ laden
@@ -78,17 +95,27 @@ public final class CrateManager {
         respawnAll();
     }
 
+    /** Leest alle bestanden in plugins/Crates/crates/. Elke sectie "<id>-crate" is een crate. */
     private void loadCrates() {
-        File file = new File(plugin.getDataFolder(), "crates.yml");
-        if (!file.exists()) plugin.saveResource("crates.yml", false);
-        YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
-        for (String key : yml.getKeys(false)) {
-            if (!key.endsWith("-crate")) continue;
-            ConfigurationSection s = yml.getConfigurationSection(key);
-            if (s == null) continue;
-            String id = key.substring(0, key.length() - "-crate".length()).toLowerCase();
-            Crate c = Crate.load(id, s, plugin.getLogger());
-            if (c != null) crates.put(id, c);
+        File dir = new File(plugin.getDataFolder(), "crates");
+        if (!dir.exists()) {
+            dir.mkdirs();
+            for (String name : DEFAULT_CRATES) plugin.saveResource("crates/" + name + ".yml", false);
+        }
+        File[] files = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
+        if (files == null) return;
+        Arrays.sort(files, Comparator.comparing(File::getName));
+
+        for (File file : files) {
+            YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
+            for (String key : yml.getKeys(false)) {
+                if (!key.endsWith("-crate")) continue;
+                ConfigurationSection s = yml.getConfigurationSection(key);
+                if (s == null) continue;
+                String id = key.substring(0, key.length() - "-crate".length()).toLowerCase(Locale.ROOT);
+                Crate c = Crate.load(id, s, plugin.getLogger());
+                if (c != null) crates.put(id, c);
+            }
         }
         plugin.getLogger().info("Loaded " + crates.size() + " crate(s): " + String.join(", ", crates.keySet()));
     }
@@ -102,7 +129,7 @@ public final class CrateManager {
                 int x = ((Number) m.get("x")).intValue();
                 int y = ((Number) m.get("y")).intValue();
                 int z = ((Number) m.get("z")).intValue();
-                String crate = String.valueOf(m.get("crate")).toLowerCase();
+                String crate = String.valueOf(m.get("crate")).toLowerCase(Locale.ROOT);
                 links.put(new BlockPos(world, x, y, z), crate);
             } catch (Exception ex) {
                 plugin.getLogger().warning("Skipped a broken entry in data.yml: " + m);
@@ -134,7 +161,7 @@ public final class CrateManager {
     // ------------------------------------------------------------------ crates en links
 
     public Crate crate(String id) {
-        return id == null ? null : crates.get(id.toLowerCase());
+        return id == null ? null : crates.get(id.toLowerCase(Locale.ROOT));
     }
 
     public List<String> crateIds() {
@@ -231,7 +258,7 @@ public final class CrateManager {
         for (BlockPos p : new ArrayList<>(holos.keySet())) removeHolos(p);
     }
 
-    // ------------------------------------------------------------------ keys
+    // ------------------------------------------------------------------ keys (physical + virtual)
 
     public ItemStack createKey(Crate c, int amount) {
         ItemStack it = c.key.build(amount);
@@ -247,7 +274,9 @@ public final class CrateManager {
         return it.getItemMeta().getPersistentDataContainer().get(keyTag, PersistentDataType.STRING);
     }
 
+    /** Heeft de speler een virtual of physical key voor deze crate? */
     public boolean hasKey(Player p, Crate c) {
+        if (virtual.get(p.getUniqueId(), c.id) > 0) return true;
         PlayerInventory inv = p.getInventory();
         for (int i = 0; i < 36; i++) {
             if (c.id.equals(keyId(inv.getItem(i)))) return true;
@@ -255,8 +284,9 @@ public final class CrateManager {
         return c.id.equals(keyId(inv.getItemInOffHand()));
     }
 
-    /** Neemt één key in. false als de speler er geen heeft. */
+    /** Neemt één key in: eerst een virtual key, anders een physical. false als de speler er geen heeft. */
     public boolean takeKey(Player p, Crate c) {
+        if (virtual.take(p.getUniqueId(), c.id)) return true;
         PlayerInventory inv = p.getInventory();
         for (int i = 0; i < 36; i++) {
             ItemStack it = inv.getItem(i);
@@ -303,12 +333,37 @@ public final class CrateManager {
             for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, glass.clone());
         }
         for (Crate.Reward r : c.rewards) {
-            inv.setItem(r.slot(), r.icon().build(1));
+            inv.setItem(r.slot(), r.icon().build());
         }
         if (c.backEnabled && c.back != null) {
             inv.setItem(c.backSlot, c.back.build(1));
         }
         p.openInventory(inv);
+    }
+
+    /** Confirm-menu: de gekozen reward in het midden, rode pane links (terug), lime pane rechts (bevestigen). */
+    public void openConfirm(Player p, Crate c, Crate.Reward r) {
+        ConfirmHolder h = new ConfirmHolder(c, r);
+        String title = "&8" + Msg.smallCaps(Msg.text(p, "confirm_title"));
+        Inventory inv = Bukkit.createInventory(h, 27, Msg.c(title));
+        h.inv = inv;
+
+        ItemStack bg = Crate.pane(Material.BLACK_STAINED_GLASS_PANE);
+        for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, bg.clone());
+
+        inv.setItem(ITEM_SLOT, r.icon().build());
+        inv.setItem(CANCEL_SLOT, button(Material.RED_STAINED_GLASS_PANE, "&c", p, "btn_cancel", "cancel_lore"));
+        inv.setItem(CONFIRM_SLOT, button(Material.LIME_STAINED_GLASS_PANE, "&a", p, "btn_confirm", "confirm_lore"));
+        p.openInventory(inv);
+    }
+
+    private ItemStack button(Material material, String color, Player p, String nameKey, String loreKey) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Msg.c(color + Msg.smallCaps(Msg.text(p, nameKey))));
+        meta.lore(List.of(Msg.c("&7" + Msg.text(p, loreKey))));
+        item.setItemMeta(meta);
+        return item;
     }
 
     /** Neemt een key in en start de roulette. */
@@ -320,18 +375,35 @@ public final class CrateManager {
         new Spin(plugin, this, p, c).start();
     }
 
-    /** Voert de reward-commands uit en meldt het aan de speler. Altijd op de main thread aanroepen. */
-    public void give(Player p, Crate.Reward r) {
-        for (String cmd : r.commands()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("%player%", p.getName()));
+    /**
+     * Geeft de reward: de commands uit de config, of (zonder commands) het item zelf.
+     * Altijd op de main thread aanroepen.
+     */
+    public void give(Player p, Crate c, Crate.Reward r) {
+        if (r.commands().isEmpty()) {
+            Map<Integer, ItemStack> left = p.getInventory().addItem(r.icon().build());
+            for (ItemStack rest : left.values()) {
+                p.getWorld().dropItemNaturally(p.getLocation(), rest);
+            }
+        } else {
+            for (String cmd : r.commands()) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("%player%", p.getName()));
+            }
         }
         String name = r.icon().name != null ? r.icon().name : r.icon().material.name();
         Msg.send(p, "reward", name);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+
+        if (r.icon().broadcast) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                Msg.send(online, "broadcast", p.getName(), name, c.displayName());
+            }
+        }
     }
 
     public void shutdown() {
         for (Spin s : new ArrayList<>(spins.values())) s.abort();
         removeAllHolos();
+        virtual.shutdown();
     }
 }

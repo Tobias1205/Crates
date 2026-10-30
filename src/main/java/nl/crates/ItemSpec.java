@@ -8,7 +8,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-/** Beschrijving van een item uit de config (materiaal, naam, lore, enchantments). */
+/** Beschrijving van een item uit de config (materiaal, naam, lore, enchantments, trim, aantal). */
 public final class ItemSpec {
 
     public final Material material;
@@ -25,17 +29,27 @@ public final class ItemSpec {
     public final List<String> lore;
     public final Map<Enchantment, Integer> enchants;
     public final boolean glow;
+    public final int amount;
+    public final String trimMaterial;
+    public final String trimPattern;
+    /** Als dit item gewonnen wordt, krijgt de hele server een bericht. */
+    public final boolean broadcast;
 
-    public ItemSpec(Material material, String name, List<String> lore, Map<Enchantment, Integer> enchants, boolean glow) {
+    public ItemSpec(Material material, String name, List<String> lore, Map<Enchantment, Integer> enchants,
+                    boolean glow, int amount, String trimMaterial, String trimPattern, boolean broadcast) {
         this.material = material;
         this.name = name;
         this.lore = lore;
         this.enchants = enchants;
         this.glow = glow;
+        this.amount = amount;
+        this.trimMaterial = trimMaterial;
+        this.trimPattern = trimPattern;
+        this.broadcast = broadcast;
     }
 
     public static ItemSpec simple(Material material, String name) {
-        return new ItemSpec(material, name, List.of(), Map.of(), false);
+        return new ItemSpec(material, name, List.of(), Map.of(), false, 1, null, null, false);
     }
 
     public static ItemSpec of(ConfigurationSection s, Material fallback, Logger log) {
@@ -61,11 +75,40 @@ public final class ItemSpec {
                 enchants.put(e, Math.max(1, Math.min(255, es.getInt(key))));
             }
         }
-        return new ItemSpec(mat, name, lore, enchants, s.getBoolean("glow", false));
+
+        String tm = null;
+        String tp = null;
+        ConfigurationSection ts = s.getConfigurationSection("trim");
+        if (ts != null) {
+            tm = ts.getString("material");
+            tp = ts.getString("pattern");
+            if (tm == null || tp == null || lookupMaterial(tm) == null || lookupPattern(tp) == null) {
+                log.warning("Invalid armor trim in " + s.getCurrentPath() + " (material/pattern), ignored.");
+                tm = null;
+                tp = null;
+            }
+        }
+
+        int amount = Math.max(1, Math.min(64, s.getInt("amount", 1)));
+        return new ItemSpec(mat, name, lore, enchants, s.getBoolean("glow", false), amount, tm, tp,
+                s.getBoolean("broadcast", false));
     }
 
-    public ItemStack build(int amount) {
-        ItemStack item = new ItemStack(material, Math.max(1, amount));
+    private static TrimMaterial lookupMaterial(String n) {
+        return Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(n.toLowerCase(Locale.ROOT)));
+    }
+
+    private static TrimPattern lookupPattern(String n) {
+        return Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(n.toLowerCase(Locale.ROOT)));
+    }
+
+    /** Item met het aantal uit de config. */
+    public ItemStack build() {
+        return build(amount);
+    }
+
+    public ItemStack build(int count) {
+        ItemStack item = new ItemStack(material, Math.max(1, count));
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
         if (name != null) meta.displayName(Msg.c(name));
@@ -76,6 +119,11 @@ public final class ItemSpec {
         }
         for (Map.Entry<Enchantment, Integer> e : enchants.entrySet()) {
             meta.addEnchant(e.getKey(), e.getValue(), true);
+        }
+        if (trimMaterial != null && trimPattern != null && meta instanceof ArmorMeta armor) {
+            TrimMaterial tm = lookupMaterial(trimMaterial);
+            TrimPattern tp = lookupPattern(trimPattern);
+            if (tm != null && tp != null) armor.setTrim(new ArmorTrim(tm, tp));
         }
         if (glow) meta.setEnchantmentGlintOverride(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

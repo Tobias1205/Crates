@@ -61,6 +61,20 @@ public final class Msg {
         who.sendMessage(c(PREFIX + text(who, key, args)));
     }
 
+    // a t/m z in small caps (de s en x blijven gewoon, zoals in jullie eigen menu's)
+    private static final String SMALL_CAPS =
+            "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍ"
+                    + "ɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ";
+
+    /** Zet gewone tekst om naar small caps. Alleen op tekst zonder kleurcodes gebruiken. */
+    public static String smallCaps(String s) {
+        StringBuilder sb = new StringBuilder(s.length());
+        for (char ch : s.toLowerCase(java.util.Locale.ROOT).toCharArray()) {
+            sb.append(ch >= 'a' && ch <= 'z' ? SMALL_CAPS.charAt(ch - 'a') : ch);
+        }
+        return sb.toString();
+    }
+
     private static void m(String key, String en, String nl, String de, String fr, String es) {
         M.put(key, new String[]{en, nl, de, fr, es});
     }
@@ -85,11 +99,85 @@ public final class Msg {
                 "Utilisation : /crates <link|unlink|list|key|open|reload>",
                 "Uso: /crates <link|unlink|list|key|open|reload>");
         m("usage_key",
-                "Usage: /crates key give <player> <crate> [amount]",
-                "Gebruik: /crates key give <speler> <crate> [aantal]",
-                "Verwendung: /crates key give <Spieler> <Crate> [Anzahl]",
-                "Utilisation : /crates key give <joueur> <crate> [quantité]",
-                "Uso: /crates key give <jugador> <crate> [cantidad]");
+                "Usage: /crates key give <virtual|physical> <player> <crate> [amount]",
+                "Gebruik: /crates key give <virtual|physical> <speler> <crate> [aantal]",
+                "Verwendung: /crates key give <virtual|physical> <Spieler> <Crate> [Anzahl]",
+                "Utilisation : /crates key give <virtual|physical> <joueur> <crate> [quantité]",
+                "Uso: /crates key give <virtual|physical> <jugador> <crate> [cantidad]");
+        m("key_given_virtual",
+                "Gave {0}x {1}&7 (virtual) to {2}.",
+                "{0}x {1}&7 (virtueel) gegeven aan {2}.",
+                "{0}x {1}&7 (virtuell) an {2} gegeben.",
+                "{0}x {1}&7 (virtuelle) donné à {2}.",
+                "Se dieron {0}x {1}&7 (virtual) a {2}.");
+        m("key_given_physical",
+                "Gave {0}x {1}&7 (physical) to {2}.",
+                "{0}x {1}&7 (fysiek) gegeven aan {2}.",
+                "{0}x {1}&7 (physisch) an {2} gegeben.",
+                "{0}x {1}&7 (physique) donné à {2}.",
+                "Se dieron {0}x {1}&7 (físico) a {2}.");
+        m("key_received_virtual",
+                "You received {0}x {1}&7 (virtual).",
+                "Je hebt {0}x {1}&7 (virtueel) ontvangen.",
+                "Du hast {0}x {1}&7 (virtuell) erhalten.",
+                "Tu as reçu {0}x {1}&7 (virtuelle).",
+                "Has recibido {0}x {1}&7 (virtual).");
+        m("key_received_physical",
+                "You received {0}x {1}&7 (physical).",
+                "Je hebt {0}x {1}&7 (fysiek) ontvangen.",
+                "Du hast {0}x {1}&7 (physisch) erhalten.",
+                "Tu as reçu {0}x {1}&7 (physique).",
+                "Has recibido {0}x {1}&7 (físico).");
+        m("keys_header",
+                "Your virtual keys:",
+                "Jouw virtuele keys:",
+                "Deine virtuellen Keys:",
+                "Tes clés virtuelles :",
+                "Tus llaves virtuales:");
+        m("keys_none",
+                "You have no virtual keys.",
+                "Je hebt geen virtuele keys.",
+                "Du hast keine virtuellen Keys.",
+                "Tu n'as aucune clé virtuelle.",
+                "No tienes llaves virtuales.");
+        String keysEntry = "&8- {0}&7: &f{1}";
+        m("keys_entry", keysEntry, keysEntry, keysEntry, keysEntry, keysEntry);
+        m("confirm_title",
+                "Confirm reward",
+                "Beloning bevestigen",
+                "Belohnung bestätigen",
+                "Confirmer la récompense",
+                "Confirmar recompensa");
+        m("btn_confirm",
+                "Confirm",
+                "Bevestigen",
+                "Bestätigen",
+                "Confirmer",
+                "Confirmar");
+        m("btn_cancel",
+                "Cancel",
+                "Annuleren",
+                "Abbrechen",
+                "Annuler",
+                "Cancelar");
+        m("confirm_lore",
+                "Click to claim this reward.",
+                "Klik om deze beloning te claimen.",
+                "Klicke, um diese Belohnung zu erhalten.",
+                "Clique pour obtenir cette récompense.",
+                "Haz clic para reclamar esta recompensa.");
+        m("cancel_lore",
+                "Click to go back.",
+                "Klik om terug te gaan.",
+                "Klicke, um zurückzugehen.",
+                "Clique pour revenir.",
+                "Haz clic para volver.");
+        m("broadcast",
+                "&f{0} &7just won {1}&7 from the {2}&7!",
+                "&f{0} &7heeft zojuist {1}&7 gewonnen uit de {2}&7!",
+                "&f{0} &7hat gerade {1}&7 aus der {2}&7 gewonnen!",
+                "&f{0} &7vient de gagner {1}&7 dans la {2}&7 !",
+                "&f{0} &7acaba de ganar {1}&7 de la {2}&7!");
         m("unknown_crate",
                 "Unknown crate: {0}",
                 "Onbekende crate: {0}",

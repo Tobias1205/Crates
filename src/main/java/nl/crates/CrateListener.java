@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryHolder;
 
 public final class CrateListener implements Listener {
 
@@ -78,12 +79,30 @@ public final class CrateListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (!(e.getInventory().getHolder() instanceof CrateHolder h)) return;
+        InventoryHolder holder = e.getInventory().getHolder();
+
+        // --- confirm-menu
+        if (holder instanceof ConfirmHolder ch) {
+            e.setCancelled(true);
+            if (!(e.getWhoClicked() instanceof Player clicker)) return;
+            if (e.getClickedInventory() != e.getInventory() || ch.used) return;
+            int slot = e.getSlot();
+            if (slot == CrateManager.CONFIRM_SLOT) {
+                confirm(clicker, ch);
+            } else if (slot == CrateManager.CANCEL_SLOT) {
+                ch.used = true;
+                Bukkit.getScheduler().runTask(plugin, () -> manager.open(clicker, ch.crate, false));
+            }
+            return;
+        }
+
+        // --- crate-GUI
+        if (!(holder instanceof CrateHolder h)) return;
         // alles in en rond de crate-GUI is vergrendeld (ook shift-click vanuit de eigen inventory)
         e.setCancelled(true);
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (e.getClickedInventory() == null || e.getClickedInventory() != e.getInventory()) return;
-        if (h.spin != null || h.used) return;
+        if (h.spin != null) return;
 
         int slot = e.getSlot();
         Crate c = h.crate;
@@ -97,19 +116,31 @@ public final class CrateListener implements Listener {
         Crate.Reward r = c.rewardAt(slot);
         if (r == null) return;
 
-        if (!manager.takeKey(p, c)) {
+        // eerst controleren of de speler een key heeft; de key wordt pas bij "bevestigen" ingenomen
+        if (!manager.hasKey(p, c)) {
             Msg.send(p, "no_key", c.keyName());
             p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.7f, 1f);
             return;
         }
-        h.used = true;
-        manager.give(p, r);
+        Bukkit.getScheduler().runTask(plugin, () -> manager.openConfirm(p, c, r));
+    }
+
+    private void confirm(Player p, ConfirmHolder ch) {
+        ch.used = true;
+        if (manager.takeKey(p, ch.crate)) {
+            manager.give(p, ch.crate, ch.reward);
+        } else {
+            // de key is ondertussen weg (bijvoorbeeld weggegooid)
+            Msg.send(p, "no_key", ch.crate.keyName());
+            p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.7f, 1f);
+        }
         Bukkit.getScheduler().runTask(plugin, () -> p.closeInventory());
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent e) {
-        if (e.getInventory().getHolder() instanceof CrateHolder) e.setCancelled(true);
+        InventoryHolder holder = e.getInventory().getHolder();
+        if (holder instanceof CrateHolder || holder instanceof ConfirmHolder) e.setCancelled(true);
     }
 
     @EventHandler
@@ -123,6 +154,7 @@ public final class CrateListener implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         Spin s = manager.spins.get(e.getPlayer().getUniqueId());
         if (s != null) s.finish(false);
+        manager.virtual().evict(e.getPlayer().getUniqueId());
     }
 
     // ------------------------------------------------------------------ keys en bescherming

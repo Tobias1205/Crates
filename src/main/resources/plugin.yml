@@ -1,6 +1,6 @@
 name: Crates
 main: nl.crates.CratesPlugin
-version: 1.0.0
+version: ${project.version}
 api-version: '1.21'
 description: Crates (common, gold, amethyst, crimson, prime) die je aan blokken koppelt
 commands:
@@ -9,6 +9,10 @@ commands:
     usage: /crates <link|unlink|list|key|open|reload>
     aliases: [crate]
     permission: crates.admin
+  keys:
+    description: Bekijk je virtual keys
+    usage: /keys
+    permission: crates.use
 permissions:
   crates.admin:
     description: Crates koppelen, keys geven en herladen

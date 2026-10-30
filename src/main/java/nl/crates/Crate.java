@@ -119,10 +119,19 @@ public final class Crate {
             return null;
         }
 
+        // Geen key-sectie in de config? Dan wordt de naam afgeleid van de filler-naam:
+        // "&3ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ" -> "&3ᴘʀɪᴍᴇ ᴋᴇʏ" (ᴄʀᴀᴛᴇ en ᴋᴇʏ in small caps, als unicode-escapes)
         ConfigurationSection ks = s.getConfigurationSection("key");
-        ItemSpec key = ks != null
-                ? ItemSpec.of(ks, Material.TRIPWIRE_HOOK, log)
-                : ItemSpec.simple(Material.TRIPWIRE_HOOK, "&7" + id + " key");
+        ItemSpec key;
+        if (ks != null) {
+            key = ItemSpec.of(ks, Material.TRIPWIRE_HOOK, log);
+        } else {
+            String base = (filler != null && filler.name != null) ? filler.name : "&7" + id + " crate";
+            String keyName = base.replaceAll("(?i)ᴄʀᴀᴛᴇ\\s*$", "ᴋᴇʏ");
+            if (keyName.equals(base)) keyName = base + " ᴋᴇʏ";
+            key = new ItemSpec(Material.TRIPWIRE_HOOK, keyName, List.of("&7Use this key at its crate."),
+                    java.util.Map.of(), true, 1, null, null, false);
+        }
 
         return new Crate(id, title, effect, rows, fillerEnabled, filler, backEnabled, backSlot, back, holos, rewards, key);
     }
@@ -161,6 +170,11 @@ public final class Crate {
 
     public String keyName() {
         return key.name != null ? key.name : id;
+    }
+
+    /** Naam van de crate zoals spelers die zien (de filler-naam), anders het id. */
+    public String displayName() {
+        return (filler != null && filler.name != null) ? filler.name : id;
     }
 
     public ItemStack fillerItem() {

@@ -1,0 +1,105 @@
+prime-crate:
+  inventory:
+    name: '&8ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE #here you set it to choose or nowait (/dc seteffect <crate> <effect>)
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&3ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
+      lore:
+        - '&7With a ᴘʀɪᴍᴇ ᴋᴇʏ you can choose'
+        - '&7which of the 7 you want.'
+  hologram:
+    1:
+      height: 1.1
+      lines:
+        - #"&3ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ"
+        - #"&f/store"
+    2:
+      height: 1.5
+      lines:
+        - #"&3%crate_keys_prime% &fKeys"
+  rewards:
+    1:
+      slot: 10
+      icon:
+        material: NETHERITE_HELMET
+        name: '&3ᴘʀɪᴍᴇ ʜᴇʟᴍᴇᴛ'
+        trim:
+          material: diamond
+          pattern: host
+        enchantments:
+          mending: 1
+          protection: 4
+          respiration: 3
+          unbreaking: 3
+        broadcast: true
+    2:
+      slot: 11
+      icon:
+        material: NETHERITE_CHESTPLATE
+        name: '&3ᴘʀɪᴍᴇ ᴄʜᴇsᴛᴘʟᴀᴛᴇ'
+        trim:
+          material: diamond
+          pattern: host
+        enchantments:
+          mending: 1
+          protection: 4
+          unbreaking: 3
+    3:
+      slot: 12
+      icon:
+        material: NETHERITE_LEGGINGS
+        name: '&3ᴘʀɪᴍᴇ ʟᴇɢɢɪɴɢs'
+        trim:
+          material: diamond
+          pattern: host
+        enchantments:
+          blast_protection: 4
+          mending: 1
+          swift_sneak: 3
+          unbreaking: 3
+    4:
+      slot: 13
+      icon:
+        material: NETHERITE_BOOTS
+        name: '&3ᴘʀɪᴍᴇ ʙᴏᴏᴛs'
+        trim:
+          material: diamond
+          pattern: host
+        enchantments:
+          mending: 1
+          soul_speed: 3
+          unbreaking: 3
+          protection: 4
+          depth_strider: 3
+          feather_falling: 4
+    5:
+      slot: 14
+      icon:
+        material: NETHERITE_SWORD
+        name: '&3ᴘʀɪᴍᴇ sᴡᴏʀᴅ'
+        enchantments:
+          knockback: 1
+          mending: 1
+          sharpness: 5
+          unbreaking: 3
+          looting: 3
+    6:
+      slot: 15
+      icon:
+        material: CROSSBOW
+        name: '&3ᴘʀɪᴍᴇ ᴄʀᴏssʙᴏᴡ'
+        enchantments:
+          mending: 1
+          multishot: 1
+          quick_charge: 3
+          unbreaking: 3
+    7:
+      slot: 16
+      icon:
+        material: ELYTRA
+        name: '&3ᴘʀɪᴍᴇ ᴇʟʏᴛʀᴀ'
+        enchantments:
+          mending: 1

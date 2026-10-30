@@ -15,12 +15,14 @@ public final class CratesPlugin extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new CrateListener(this, manager), this);
 
-        PluginCommand command = getCommand("crates");
-        if (command != null) {
-            CratesCommand handler = new CratesCommand(this, manager);
-            command.setExecutor(handler);
-            command.setTabCompleter(handler);
+        PluginCommand crates = getCommand("crates");
+        if (crates != null) {
+            CratesCommand handler = new CratesCommand(manager);
+            crates.setExecutor(handler);
+            crates.setTabCompleter(handler);
         }
+        PluginCommand keys = getCommand("keys");
+        if (keys != null) keys.setExecutor(new KeysCommand(manager));
 
         // één tick later, zodat alle werelden zeker geladen zijn
         Bukkit.getScheduler().runTask(this, () -> manager.respawnAll());

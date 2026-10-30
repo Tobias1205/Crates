@@ -1,0 +1,114 @@
+common-crate:
+  inventory:
+    name: '&8ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+    effect: CHOOSE # here you set it to choose or nowait (/dc seteffect <crate> <effect>)
+    rows: 3
+    filler-item:
+      enable: true
+      material: BLACK_STAINED_GLASS_PANE
+      name: '&2ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+      lore:
+      - '&7With a ᴄᴏᴍᴍᴏɴ ᴋᴇʏ you can choose'
+      - '&7which of the 7 you want.'
+  hologram:
+    '1':
+      height: 1.1
+      lines:
+      - null
+      - null
+    '2':
+      height: 1.5
+      lines:
+      - null
+  rewards:
+    '1':
+      slot: 9
+      icon:
+        material: DIAMOND_HELMET
+        name: §2ᴄᴏᴍᴍᴏɴ ʜᴇʟᴍᴇᴛ
+        enchantments:
+          protection: 1
+          respiration: 2
+        trim:
+          material: emerald
+          pattern: wild
+      chance: 100.0%
+    '2':
+      slot: 10
+      icon:
+        material: DIAMOND_CHESTPLATE
+        name: §2ᴄᴏᴍᴍᴏɴ ᴄʜᴇsᴛᴘʟᴀᴛᴇ
+        enchantments:
+          protection: 1
+        trim:
+          material: emerald
+          pattern: wild
+      chance: 100.0%
+    '3':
+      slot: 11
+      icon:
+        material: DIAMOND_LEGGINGS
+        name: §2ᴄᴏᴍᴍᴏɴ ʟᴇɢɢɪɴɢs
+        enchantments:
+          protection: 1
+          swift_sneak: 2
+        trim:
+          material: emerald
+          pattern: wild
+      chance: 100.0%
+    '4':
+      slot: 12
+      icon:
+        material: DIAMOND_BOOTS
+        name: §2ᴄᴏᴍᴍᴏɴ ʙᴏᴏᴛs
+        enchantments:
+          depth_strider: 2
+          feather_falling: 2
+          protection: 1
+        trim:
+          material: emerald
+          pattern: wild
+      chance: 100.0%
+    '5':
+      slot: 13
+      icon:
+        material: DIAMOND_SWORD
+        name: §2ᴄᴏᴍᴍᴏɴ sᴡᴏʀᴅ
+        enchantments:
+          looting: 2
+          sharpness: 1
+      chance: 100.0%
+    '6':
+      slot: 14
+      icon:
+        material: DIAMOND_PICKAXE
+        name: §2ᴄᴏᴍᴍᴏɴ ᴘɪᴄᴋᴀxᴇ
+        enchantments:
+          efficiency: 2
+          fortune: 1
+      chance: 100.0%
+    '7':
+      slot: 15
+      icon:
+        material: DIAMOND_AXE
+        name: §2ᴄᴏᴍᴍᴏɴ ᴀxᴇ
+        enchantments:
+          efficiency: 3
+      chance: 100.0%
+    '8':
+      slot: 16
+      icon:
+        material: DIAMOND_SHOVEL
+        name: §2ᴄᴏᴍᴍᴏɴ sʜᴏᴠᴇʟ
+        enchantments:
+          efficiency: 3
+      chance: 100.0%
+    '9':
+      slot: 17
+      icon:
+        material: DIAMOND_HOE
+        name: §2ᴄᴏᴍᴍᴏɴ ʜᴏᴇ
+        enchantments:
+          efficiency: 2
+          fortune: 1
+      chance: 100.0%

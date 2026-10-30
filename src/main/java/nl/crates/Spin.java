@@ -64,7 +64,7 @@ public final class Spin {
     private void run() {
         if (finished) return;
         for (int i = 0; i < 9; i++) {
-            inv.setItem(9 + i, seq.get(step + i).icon().build(1));
+            inv.setItem(9 + i, seq.get(step + i).icon().build());
         }
         if (step >= steps) {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -83,7 +83,7 @@ public final class Spin {
         finished = true;
         if (task != null) task.cancel();
         manager.spins.remove(player.getUniqueId());
-        manager.give(player, winner);
+        manager.give(player, crate, winner);
         if (closeInv && player.isOnline()) player.closeInventory();
     }
 
