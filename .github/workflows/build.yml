@@ -51,7 +51,15 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           INPUT_BUMP: ${{ github.event.inputs.bump }}
         run: |
-          CURRENT=$(mvn -B -q -DforceStdout help:evaluate -Dexpression=project.version)
+          POM_VERSION=$(mvn -B -q -DforceStdout help:evaluate -Dexpression=project.version)
+
+          # Uitgangspunt is de hoogste van: de versie in pom.xml en de laatste tag (v1.2.3).
+          # Zo gaat het ook goed als de pom is teruggezet (bijvoorbeeld door een nieuwe upload).
+          CURRENT="$POM_VERSION"
+          LATEST_TAG=$(git tag -l 'v[0-9]*' --sort=-v:refname | head -n1 | sed 's/^v//')
+          if [ -n "$LATEST_TAG" ] && [ "$(printf '%s\n%s\n' "$LATEST_TAG" "$POM_VERSION" | sort -V | tail -n1)" = "$LATEST_TAG" ]; then
+            CURRENT="$LATEST_TAG"
+          fi
           IFS=. read -r MAJOR MINOR PATCH <<< "$CURRENT"
 
           BUMP=patch
@@ -70,6 +78,11 @@ jobs:
           esac
 
           NEW="$MAJOR.$MINOR.$PATCH"
+          # veiligheid: bestaat deze tag toch al, ga dan door naar het eerstvolgende vrije nummer
+          while git rev-parse -q --verify "refs/tags/v$NEW" > /dev/null; do
+            PATCH=$((PATCH + 1))
+            NEW="$MAJOR.$MINOR.$PATCH"
+          done
           echo "Versie: $CURRENT -> $NEW ($BUMP)"
           echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
           echo "new=$NEW" >> "$GITHUB_OUTPUT"
