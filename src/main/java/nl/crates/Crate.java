@@ -23,16 +23,15 @@ public final class Crate {
     public record Reward(int slot, ItemSpec icon, double chance, List<String> commands) {
     }
 
-    public record Holo(double height, List<String> lines) {
-        /** true als de tekst per speler verschilt (bevat een key-teller), dan krijgt elke speler een eigen hologram. */
+    /**
+     * Eén regel van het hologram. base = hoogte van de onderste regel (null = "auto": net boven het blok),
+     * up = hoeveel deze regel daar bovenop staat.
+     */
+    public record HoloLine(Double base, double up, String text) {
+        /** true als de tekst per speler verschilt (bevat een key-teller), dan krijgt elke speler een eigen regel. */
         public boolean dynamic() {
-            for (String l : lines) {
-                if (l.contains("%keys%") || l.contains("%virtual%") || l.contains("%physical%")
-                        || l.contains("%crate_keys_")) {
-                    return true;
-                }
-            }
-            return false;
+            return text.contains("%keys%") || text.contains("%virtual%") || text.contains("%physical%")
+                    || text.contains("%crate_keys_");
         }
     }
 
@@ -45,14 +44,14 @@ public final class Crate {
     public final boolean backEnabled;
     public final int backSlot;
     public final ItemSpec back;
-    public final List<Holo> holograms;
+    public final List<HoloLine> holoLines;
     /** hologram.enable uit de config; het commando /crates hologram kan dit overschrijven. */
     public final boolean hologramEnabled;
     public final List<Reward> rewards;
     public final ItemSpec key;
 
     private Crate(String id, String title, Effect effect, int rows, boolean fillerEnabled, ItemSpec filler,
-                  boolean backEnabled, int backSlot, ItemSpec back, List<Holo> holograms,
+                  boolean backEnabled, int backSlot, ItemSpec back, List<HoloLine> holoLines,
                   boolean hologramEnabled, List<Reward> rewards, ItemSpec key) {
         this.id = id;
         this.title = title;
@@ -63,7 +62,7 @@ public final class Crate {
         this.backEnabled = backEnabled;
         this.backSlot = backSlot;
         this.back = back;
-        this.holograms = holograms;
+        this.holoLines = holoLines;
         this.hologramEnabled = hologramEnabled;
         this.rewards = rewards;
         this.key = key;
@@ -95,7 +94,7 @@ public final class Crate {
         ItemSpec back = bs != null ? ItemSpec.of(bs, Material.RED_STAINED_GLASS_PANE, log) : null;
         if (backEnabled && (backSlot < 0 || backSlot >= rows * 9)) backEnabled = false;
 
-        List<Holo> holos = new ArrayList<>();
+        List<HoloLine> holos = new ArrayList<>();
         ConfigurationSection hs = s.getConfigurationSection("hologram");
         // hologram.enable: false zet de hologrammen van deze crate uit (standaard aan). De regels worden altijd
         // ingelezen, zodat /crates hologram <crate> on het ook kan aanzetten als het in de config uit staat.
@@ -108,8 +107,15 @@ public final class Crate {
                 for (String l : h.getStringList("lines")) {
                     if (l != null && !l.equalsIgnoreCase("null")) lines.add(l);
                 }
-                boolean anyText = lines.stream().anyMatch(l -> !l.isBlank());
-                if (anyText) holos.add(new Holo(h.getDouble("height", 1.5), lines));
+                // height: een getal = hoogte boven de onderkant van het blok (midden van de onderste regel);
+                // "auto" of weglaten = net boven de bovenkant van het blok, ook bij een chest of enchanting table.
+                Double base = h.get("height") instanceof Number n ? n.doubleValue() : null;
+                // line-spacing: afstand tussen twee regels. De eerste regel staat bovenaan, de laatste onderaan.
+                double spacing = Math.max(0.05, h.getDouble("line-spacing", 0.2));
+                for (int i = 0; i < lines.size(); i++) {
+                    if (lines.get(i).isBlank()) continue; // een lege regel is alleen ruimte
+                    holos.add(new HoloLine(base, (lines.size() - 1 - i) * spacing, lines.get(i)));
+                }
             }
         }
 

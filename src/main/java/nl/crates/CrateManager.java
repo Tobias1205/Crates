@@ -23,6 +23,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BoundingBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,6 +233,22 @@ public final class CrateManager {
 
     // ------------------------------------------------------------------ hologrammen
 
+    /** Bij height "auto": zoveel staat het midden van de onderste regel boven de bovenkant van het blok. */
+    private static final double AUTO_GAP = 0.28;
+
+    /** Hoogte van de bovenkant van het blok boven zijn onderkant (chest 0.875, volle blok 1.0). */
+    private static double blockTop(World w, BlockPos p) {
+        BoundingBox bb = w.getBlockAt(p.x(), p.y(), p.z()).getBoundingBox();
+        double top = bb.getMaxY() - p.y();
+        if (bb.getHeight() <= 0 || top <= 0.1) return 1.0;
+        return Math.min(top, 2.0);
+    }
+
+    /** Hoogte boven de onderkant van het blok waarop het midden van deze regel komt. */
+    private static double lineHeight(Crate.HoloLine l, double top) {
+        return (l.base() != null ? l.base() : top + AUTO_GAP) + l.up();
+    }
+
     /** Staat het hologram van deze crate aan? Het commando wint van hologram.enable in de config. */
     public boolean hologramOn(Crate c) {
         return holoOverride.getOrDefault(c.id, c.hologramEnabled);
@@ -268,7 +285,10 @@ public final class CrateManager {
         }
     }
 
-    /** Zet de hologrammen neer die voor iedereen gelijk zijn. Die met een key-teller doet refreshPersonal. */
+    /**
+     * Zet de regels neer die voor iedereen gelijk zijn. Elke regel is een eigen text display op een vaste
+     * hoogte. Regels met een key-teller doet refreshPersonal.
+     */
     private void spawnHolos(BlockPos p) {
         removeHolos(p);
         String id = links.get(p);
@@ -277,17 +297,18 @@ public final class CrateManager {
         World w = Bukkit.getWorld(p.world());
         if (w == null || !w.isChunkLoaded(p.cx(), p.cz())) return;
 
+        double top = blockTop(w, p);
         List<UUID> ids = new ArrayList<>();
-        for (Crate.Holo h : c.holograms) {
-            if (h.dynamic()) continue;
-            ids.add(spawnDisplay(w, p, h, String.join("\n", h.lines()), false).getUniqueId());
+        for (Crate.HoloLine l : c.holoLines) {
+            if (l.dynamic()) continue;
+            ids.add(spawnDisplay(w, p, lineHeight(l, top), l.text(), false).getUniqueId());
         }
         if (!ids.isEmpty()) holos.put(p, ids);
     }
 
-    private TextDisplay spawnDisplay(World w, BlockPos p, Crate.Holo h, String raw, boolean hidden) {
+    private TextDisplay spawnDisplay(World w, BlockPos p, double height, String raw, boolean hidden) {
         Component text = component(raw);
-        Location loc = new Location(w, p.x() + 0.5, p.y() + h.height(), p.z() + 0.5);
+        Location loc = new Location(w, p.x() + 0.5, p.y() + height, p.z() + 0.5);
         return w.spawn(loc, TextDisplay.class, d -> {
             // verborgen vanaf het begin, zodat alleen de speler voor wie het bedoeld is het ooit te zien krijgt
             if (hidden) d.setVisibleByDefault(false);
@@ -308,8 +329,8 @@ public final class CrateManager {
     }
 
     /**
-     * Elke 0,5 seconde: spelers binnen 32 blokken van een crate krijgen hun eigen hologram met hun eigen
-     * aantal keys. Spelers die weglopen, uitloggen of van wereld wisselen raken hun hologram weer kwijt.
+     * Elke 0,5 seconde: spelers binnen 32 blokken van een crate krijgen hun eigen regels met hun eigen
+     * aantal keys. Spelers die weglopen, uitloggen of van wereld wisselen raken ze weer kwijt.
      */
     public void refreshPersonal() {
         for (Map.Entry<BlockPos, String> e : links.entrySet()) {
@@ -317,10 +338,10 @@ public final class CrateManager {
             Crate c = crates.get(e.getValue());
             World w = Bukkit.getWorld(p.world());
 
-            List<Crate.Holo> dyn = new ArrayList<>();
+            List<Crate.HoloLine> dyn = new ArrayList<>();
             if (c != null && hologramOn(c)) {
-                for (Crate.Holo h : c.holograms) {
-                    if (h.dynamic()) dyn.add(h);
+                for (Crate.HoloLine l : c.holoLines) {
+                    if (l.dynamic()) dyn.add(l);
                 }
             }
             if (dyn.isEmpty() || w == null || !w.isChunkLoaded(p.cx(), p.cz())) {
@@ -328,13 +349,14 @@ public final class CrateManager {
                 continue;
             }
 
+            double top = blockTop(w, p);
             Map<UUID, List<UUID>> views = personal.computeIfAbsent(p, k -> new HashMap<>());
             Location center = new Location(w, p.x() + 0.5, p.y() + 1.0, p.z() + 0.5);
             Set<UUID> near = new HashSet<>();
             for (Player pl : w.getPlayers()) {
                 if (pl.getLocation().distanceSquared(center) > VIEW_RANGE_SQ) continue;
                 near.add(pl.getUniqueId());
-                updateView(pl, w, p, c, dyn, views);
+                updateView(pl, w, p, c, dyn, top, views);
             }
 
             Iterator<Map.Entry<UUID, List<UUID>>> it = views.entrySet().iterator();
@@ -348,7 +370,7 @@ public final class CrateManager {
         }
     }
 
-    private void updateView(Player pl, World w, BlockPos p, Crate c, List<Crate.Holo> dyn,
+    private void updateView(Player pl, World w, BlockPos p, Crate c, List<Crate.HoloLine> dyn, double top,
                             Map<UUID, List<UUID>> views) {
         List<UUID> ids = views.get(pl.getUniqueId());
         boolean ok = ids != null && ids.size() == dyn.size();
@@ -365,9 +387,9 @@ public final class CrateManager {
         if (!ok) {
             if (ids != null) removeEntities(ids);
             ids = new ArrayList<>();
-            for (Crate.Holo h : dyn) {
-                String raw = renderRaw(pl, c, h);
-                TextDisplay td = spawnDisplay(w, p, h, raw, true);
+            for (Crate.HoloLine l : dyn) {
+                String raw = renderRaw(pl, c, l.text());
+                TextDisplay td = spawnDisplay(w, p, lineHeight(l, top), raw, true);
                 pl.showEntity(plugin, td);
                 lastText.put(td.getUniqueId(), raw);
                 ids.add(td.getUniqueId());
@@ -377,7 +399,7 @@ public final class CrateManager {
         }
 
         for (int i = 0; i < dyn.size(); i++) {
-            String raw = renderRaw(pl, c, dyn.get(i));
+            String raw = renderRaw(pl, c, dyn.get(i).text());
             UUID id = ids.get(i);
             if (raw.equals(lastText.get(id))) continue;
             if (Bukkit.getEntity(id) instanceof TextDisplay td) {
@@ -388,23 +410,17 @@ public final class CrateManager {
     }
 
     /** Vult %keys%, %virtual%, %physical% en %crate_keys_<crate>% in met de aantallen van deze speler. */
-    private String renderRaw(Player viewer, Crate c, Crate.Holo h) {
+    private String renderRaw(Player viewer, Crate c, String text) {
         int virt = virtual.get(viewer.getUniqueId(), c.id);
         int phys = physicalKeys(viewer, c);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < h.lines().size(); i++) {
-            String line = h.lines().get(i)
-                    .replace("%keys%", String.valueOf(virt + phys))
-                    .replace("%virtual%", String.valueOf(virt))
-                    .replace("%physical%", String.valueOf(phys));
-            line = CRATE_KEYS.matcher(line).replaceAll(m -> {
-                Crate other = crates.get(m.group(1).toLowerCase(Locale.ROOT));
-                return other == null ? "0" : String.valueOf(totalKeys(viewer, other));
-            });
-            if (i > 0) sb.append('\n');
-            sb.append(line);
-        }
-        return sb.toString();
+        String line = text
+                .replace("%keys%", String.valueOf(virt + phys))
+                .replace("%virtual%", String.valueOf(virt))
+                .replace("%physical%", String.valueOf(phys));
+        return CRATE_KEYS.matcher(line).replaceAll(m -> {
+            Crate other = crates.get(m.group(1).toLowerCase(Locale.ROOT));
+            return other == null ? "0" : String.valueOf(totalKeys(viewer, other));
+        });
     }
 
     private void removeEntities(List<UUID> ids) {

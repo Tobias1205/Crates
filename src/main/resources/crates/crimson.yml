@@ -10,13 +10,17 @@ crimson-crate:
       lore:
         - '&7With a ᴄʀɪᴍsᴏɴ ᴋᴇʏ you can choose'
         - '&7which of the 7 you want.'
-  # Hologram above the crate. Lines with a key counter are shown per player, each player sees their own number:
-  # %keys% (virtual + physical), %virtual%, %physical% and %crate_keys_<crate>%.
+  # Hologram above the crate, one line per entry (first = top, last = bottom). Lines with a key counter are shown
+  # per player, each player sees their own number: %keys% (virtual + physical), %virtual%, %physical%,
+  # %crate_keys_<crate>%.
+  # height: auto = just above the block (also for a chest); a number = height above the bottom of the block,
+  # to the middle of the lowest line. line-spacing = distance between two lines.
   # Turn it on/off with enable, or in-game with /crates hologram <crate> on|off (the command wins).
   hologram:
     enable: true
     '1':
-      height: 1.2
+      height: auto
+      line-spacing: 0.2
       lines:
       - '&4ᴄʀɪᴍsᴏɴ ᴄʀᴀᴛᴇ'
       - '&4%crate_keys_crimson% &fKeys'
