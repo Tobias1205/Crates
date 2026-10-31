@@ -157,7 +157,7 @@ public final class Crate {
             String keyName = base.replaceAll("(?i)ᴄʀᴀᴛᴇ\\s*$", "ᴋᴇʏ");
             if (keyName.equals(base)) keyName = base + " ᴋᴇʏ";
             key = new ItemSpec(Material.TRIPWIRE_HOOK, keyName, List.of("&7Use this key at its crate."),
-                    java.util.Map.of(), true, 1, null, null, false, 0);
+                    java.util.Map.of(), true, 1, null, null, false, 0, false);
         }
 
         return new Crate(id, title, effect, rows, fillerEnabled, filler, backEnabled, backSlot, back, holos,

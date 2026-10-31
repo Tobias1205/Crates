@@ -37,11 +37,14 @@ public final class ItemSpec {
     public final boolean broadcast;
     /** Vliegduur van een firework rocket (1-3 in vanilla, 0 = niet instellen). */
     public final int flightDuration;
+    /** Verbergt de extra tooltip-regels die Minecraft zelf toevoegt (bij een rocket: "Flight Duration"). */
+    public final boolean hideExtraTooltip;
 
     public ItemSpec(Material material, String name, List<String> lore, Map<Enchantment, Integer> enchants,
                     boolean glow, int amount, String trimMaterial, String trimPattern, boolean broadcast,
-                    int flightDuration) {
+                    int flightDuration, boolean hideExtraTooltip) {
         this.flightDuration = flightDuration;
+        this.hideExtraTooltip = hideExtraTooltip;
         this.material = material;
         this.name = name;
         this.lore = lore;
@@ -54,7 +57,7 @@ public final class ItemSpec {
     }
 
     public static ItemSpec simple(Material material, String name) {
-        return new ItemSpec(material, name, List.of(), Map.of(), false, 1, null, null, false, 0);
+        return new ItemSpec(material, name, List.of(), Map.of(), false, 1, null, null, false, 0, false);
     }
 
     public static ItemSpec of(ConfigurationSection s, Material fallback, Logger log) {
@@ -97,7 +100,7 @@ public final class ItemSpec {
         int amount = Math.max(1, Math.min(64, s.getInt("amount", 1)));
         int flight = Math.max(0, Math.min(127, s.getInt("flight-duration", 0)));
         return new ItemSpec(mat, name, lore, enchants, s.getBoolean("glow", false), amount, tm, tp,
-                s.getBoolean("broadcast", false), flight);
+                s.getBoolean("broadcast", false), flight, s.getBoolean("hide-flight-duration", false));
     }
 
     private static TrimMaterial lookupMaterial(String n) {
@@ -134,6 +137,9 @@ public final class ItemSpec {
         if (flightDuration > 0 && meta instanceof FireworkMeta rocket) rocket.setPower(flightDuration);
         if (glow) meta.setEnchantmentGlintOverride(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        // hide-flight-duration: true verbergt de regel "Flight Duration: N" die Minecraft zelf onder elke rocket zet;
+        // de lore uit de config (met de echte duur) blijft staan.
+        if (hideExtraTooltip) meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         item.setItemMeta(meta);
         return item;
     }

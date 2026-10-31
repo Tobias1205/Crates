@@ -6,7 +6,7 @@
 
     <groupId>nl.crates</groupId>
     <artifactId>Crates</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
     <name>Crates</name>
 

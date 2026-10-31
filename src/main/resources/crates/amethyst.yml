@@ -193,6 +193,7 @@ amethyst-crate:
       slot: 39
       icon:
         material: FIREWORK_ROCKET
+        hide-flight-duration: true
         name: §5ɪɴꜰɪɴɪᴛᴇ ꜰɪʀᴇᴡᴏʀᴋ ɪ
         lore:
         - §7Never runs out
@@ -207,6 +208,7 @@ amethyst-crate:
       slot: 40
       icon:
         material: FIREWORK_ROCKET
+        hide-flight-duration: true
         name: §5ɪɴꜰɪɴɪᴛᴇ ꜰɪʀᴇᴡᴏʀᴋ ɪɪ
         lore:
         - §7Never runs out
@@ -221,6 +223,7 @@ amethyst-crate:
       slot: 41
       icon:
         material: FIREWORK_ROCKET
+        hide-flight-duration: true
         name: §5ɪɴꜰɪɴɪᴛᴇ ꜰɪʀᴇᴡᴏʀᴋ ɪɪɪ
         lore:
         - §7Never runs out
