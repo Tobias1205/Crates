@@ -6,7 +6,7 @@ description: Crates (common, gold, amethyst, crimson, prime) die je aan blokken 
 commands:
   crates:
     description: Beheer crates
-    usage: /crates <link|unlink|list|key|open|reload>
+    usage: /crates <link|unlink|list|key|open|hologram|reload>
     aliases: [crate]
     permission: crates.admin
   keys:

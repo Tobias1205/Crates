@@ -26,6 +26,7 @@ public final class CratesPlugin extends JavaPlugin {
 
         // één tick later, zodat alle werelden zeker geladen zijn
         Bukkit.getScheduler().runTask(this, () -> manager.respawnAll());
+        manager.start();
     }
 
     @Override

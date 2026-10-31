@@ -36,6 +36,7 @@ public final class CratesCommand implements TabExecutor {
             case "list" -> list(s);
             case "key" -> key(s, a);
             case "open" -> open(s, a);
+            case "hologram" -> hologram(s, a);
             case "reload" -> {
                 manager.reload();
                 Msg.send(s, "reloaded");
@@ -158,6 +159,30 @@ public final class CratesCommand implements TabExecutor {
         }
     }
 
+    /** /crates hologram <crate> <on|off> */
+    private void hologram(CommandSender s, String[] a) {
+        if (a.length < 3) {
+            Msg.send(s, "usage_hologram");
+            return;
+        }
+        Crate c = manager.crate(a[1]);
+        if (c == null) {
+            Msg.send(s, "unknown_crate", a[1]);
+            return;
+        }
+        boolean on;
+        if (a[2].equalsIgnoreCase("on")) {
+            on = true;
+        } else if (a[2].equalsIgnoreCase("off")) {
+            on = false;
+        } else {
+            Msg.send(s, "usage_hologram");
+            return;
+        }
+        manager.setHologram(c, on);
+        Msg.send(s, on ? "hologram_on" : "hologram_off", c.id);
+    }
+
     private void open(CommandSender s, String[] a) {
         if (!(s instanceof Player p)) {
             Msg.send(s, "players_only");
@@ -178,9 +203,12 @@ public final class CratesCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender s, Command cmd, String label, String[] a) {
         if (!s.hasPermission("crates.admin")) return List.of();
-        if (a.length == 1) return filter(List.of("link", "unlink", "list", "key", "open", "reload"), a[0]);
+        if (a.length == 1) return filter(List.of("link", "unlink", "list", "key", "open", "hologram", "reload"), a[0]);
         String sub = a[0].toLowerCase(Locale.ROOT);
-        if (a.length == 2 && (sub.equals("link") || sub.equals("open"))) return filter(manager.crateIds(), a[1]);
+        if (a.length == 2 && (sub.equals("link") || sub.equals("open") || sub.equals("hologram"))) {
+            return filter(manager.crateIds(), a[1]);
+        }
+        if (a.length == 3 && sub.equals("hologram")) return filter(List.of("on", "off"), a[2]);
         if (sub.equals("key")) {
             if (a.length == 2) return filter(List.of("give"), a[1]);
             if (a.length == 3) return filter(List.of("virtual", "physical"), a[2]);

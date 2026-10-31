@@ -93,17 +93,35 @@ public final class Msg {
                 "Seuls les joueurs peuvent utiliser cette commande.",
                 "Solo los jugadores pueden usar este comando.");
         m("usage",
-                "Usage: /crates <link|unlink|list|key|open|reload>",
-                "Gebruik: /crates <link|unlink|list|key|open|reload>",
-                "Verwendung: /crates <link|unlink|list|key|open|reload>",
-                "Utilisation : /crates <link|unlink|list|key|open|reload>",
-                "Uso: /crates <link|unlink|list|key|open|reload>");
+                "Usage: /crates <link|unlink|list|key|open|hologram|reload>",
+                "Gebruik: /crates <link|unlink|list|key|open|hologram|reload>",
+                "Verwendung: /crates <link|unlink|list|key|open|hologram|reload>",
+                "Utilisation : /crates <link|unlink|list|key|open|hologram|reload>",
+                "Uso: /crates <link|unlink|list|key|open|hologram|reload>");
         m("usage_key",
                 "Usage: /crates key give <virtual|physical> <player> <crate> [amount]",
                 "Gebruik: /crates key give <virtual|physical> <speler> <crate> [aantal]",
                 "Verwendung: /crates key give <virtual|physical> <Spieler> <Crate> [Anzahl]",
                 "Utilisation : /crates key give <virtual|physical> <joueur> <crate> [quantité]",
                 "Uso: /crates key give <virtual|physical> <jugador> <crate> [cantidad]");
+        m("usage_hologram",
+                "Usage: /crates hologram <crate> <on|off>",
+                "Gebruik: /crates hologram <crate> <on|off>",
+                "Verwendung: /crates hologram <Crate> <on|off>",
+                "Utilisation : /crates hologram <crate> <on|off>",
+                "Uso: /crates hologram <crate> <on|off>");
+        m("hologram_on",
+                "The hologram of the {0} crate is now on.",
+                "Het hologram van de {0} crate staat nu aan.",
+                "Das Hologramm der {0}-Crate ist jetzt an.",
+                "L'hologramme de la crate {0} est maintenant activé.",
+                "El holograma de la crate {0} ahora está activado.");
+        m("hologram_off",
+                "The hologram of the {0} crate is now off.",
+                "Het hologram van de {0} crate staat nu uit.",
+                "Das Hologramm der {0}-Crate ist jetzt aus.",
+                "L'hologramme de la crate {0} est maintenant désactivé.",
+                "El holograma de la crate {0} ahora está desactivado.");
         m("key_given_virtual",
                 "Gave {0}x {1}&7 (virtual) to {2}.",
                 "{0}x {1}&7 (virtueel) gegeven aan {2}.",

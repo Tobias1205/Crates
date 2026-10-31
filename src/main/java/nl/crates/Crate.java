@@ -24,6 +24,16 @@ public final class Crate {
     }
 
     public record Holo(double height, List<String> lines) {
+        /** true als de tekst per speler verschilt (bevat een key-teller), dan krijgt elke speler een eigen hologram. */
+        public boolean dynamic() {
+            for (String l : lines) {
+                if (l.contains("%keys%") || l.contains("%virtual%") || l.contains("%physical%")
+                        || l.contains("%crate_keys_")) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public final String id;
@@ -36,12 +46,14 @@ public final class Crate {
     public final int backSlot;
     public final ItemSpec back;
     public final List<Holo> holograms;
+    /** hologram.enable uit de config; het commando /crates hologram kan dit overschrijven. */
+    public final boolean hologramEnabled;
     public final List<Reward> rewards;
     public final ItemSpec key;
 
     private Crate(String id, String title, Effect effect, int rows, boolean fillerEnabled, ItemSpec filler,
                   boolean backEnabled, int backSlot, ItemSpec back, List<Holo> holograms,
-                  List<Reward> rewards, ItemSpec key) {
+                  boolean hologramEnabled, List<Reward> rewards, ItemSpec key) {
         this.id = id;
         this.title = title;
         this.effect = effect;
@@ -52,6 +64,7 @@ public final class Crate {
         this.backSlot = backSlot;
         this.back = back;
         this.holograms = holograms;
+        this.hologramEnabled = hologramEnabled;
         this.rewards = rewards;
         this.key = key;
     }
@@ -84,6 +97,9 @@ public final class Crate {
 
         List<Holo> holos = new ArrayList<>();
         ConfigurationSection hs = s.getConfigurationSection("hologram");
+        // hologram.enable: false zet de hologrammen van deze crate uit (standaard aan). De regels worden altijd
+        // ingelezen, zodat /crates hologram <crate> on het ook kan aanzetten als het in de config uit staat.
+        boolean hologramEnabled = hs == null || hs.getBoolean("enable", true);
         if (hs != null) {
             for (String k : hs.getKeys(false)) {
                 ConfigurationSection h = hs.getConfigurationSection(k);
@@ -144,7 +160,8 @@ public final class Crate {
                     java.util.Map.of(), true, 1, null, null, false, 0);
         }
 
-        return new Crate(id, title, effect, rows, fillerEnabled, filler, backEnabled, backSlot, back, holos, rewards, key);
+        return new Crate(id, title, effect, rows, fillerEnabled, filler, backEnabled, backSlot, back, holos,
+                hologramEnabled, rewards, key);
     }
 
     /** "100.0%", "40" of 12.5 allemaal toegestaan. */

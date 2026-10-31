@@ -6,20 +6,21 @@ amethyst-crate:
     filler-item:
       enable: true
       material: BLACK_STAINED_GLASS_PANE
-      name: '&#A20AD6ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+      name: '&5ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
       lore:
       - '&7With a ᴀᴍᴇᴛʜʏsᴛ ᴋᴇʏ you can choose'
       - '&7which of the 6 you want.'
+  # Hologram above the crate. Lines with a key counter are shown per player, each player sees their own number:
+  # %keys% (virtual + physical), %virtual%, %physical% and %crate_keys_<crate>%.
+  # Turn it on/off with enable, or in-game with /crates hologram <crate> on|off (the command wins).
   hologram:
+    enable: true
     '1':
-      height: 1.1
-      lines:
-      - null
-      - null
-    '2':
       height: 1.5
       lines:
-      - null
+      - '&5ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
+      - '&5%crate_keys_amethyst% &fKeys'
+      - '&f/store'
   back-button:
     enable: false
     displayname: '&#FF0000ᴄʟᴏꜱᴇ'

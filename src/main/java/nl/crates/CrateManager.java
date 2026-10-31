@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +30,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /** Houdt crates, gekoppelde blokken, hologrammen, keys (physical en virtual) en lopende roulettes bij. */
 public final class CrateManager {
@@ -42,6 +47,10 @@ public final class CrateManager {
     public static final int CANCEL_SLOT = 11;
     public static final int ITEM_SLOT = 13;
     public static final int CONFIRM_SLOT = 15;
+
+    /** Spelers binnen deze afstand (in blokken) van een crate zien hun eigen hologram. */
+    private static final double VIEW_RANGE_SQ = 32.0 * 32.0;
+    private static final Pattern CRATE_KEYS = Pattern.compile("%crate_keys_([A-Za-z0-9_-]+)%");
 
     private static final String[] DEFAULT_CRATES = {"amethyst", "common", "gold", "crimson", "prime"};
 
@@ -66,8 +75,16 @@ public final class CrateManager {
     private final VirtualKeys virtual;
     private final Map<String, Crate> crates = new LinkedHashMap<>();
     private final Map<BlockPos, String> links = new LinkedHashMap<>();
+    /** Hologrammen die voor iedereen hetzelfde zijn: één entity per hologram. */
     private final Map<BlockPos, List<UUID>> holos = new HashMap<>();
+    /** Hologrammen met een key-teller: per blok, per speler een eigen entity (alleen voor die speler zichtbaar). */
+    private final Map<BlockPos, Map<UUID, List<UUID>>> personal = new HashMap<>();
+    /** Laatst getoonde tekst per hologram-entity, zodat we alleen bijwerken als het getal echt veranderd is. */
+    private final Map<UUID, String> lastText = new HashMap<>();
+    /** /crates hologram <crate> on|off: wint van hologram.enable in de config. Staat in data.yml. */
+    private final Map<String, Boolean> holoOverride = new HashMap<>();
     private final File dataFile;
+    private BukkitTask personalTask;
 
     public CrateManager(CratesPlugin plugin) {
         this.plugin = plugin;
@@ -78,6 +95,11 @@ public final class CrateManager {
 
     public VirtualKeys virtual() {
         return virtual;
+    }
+
+    /** Start de taak die de hologrammen per speler bijhoudt (elke 0,5 seconde). */
+    public void start() {
+        personalTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> refreshPersonal(), 20L, 10L);
     }
 
     // ------------------------------------------------------------------ laden
@@ -91,6 +113,7 @@ public final class CrateManager {
         removeAllHolos();
         crates.clear();
         links.clear();
+        holoOverride.clear();
         loadAll();
         respawnAll();
     }
@@ -135,6 +158,12 @@ public final class CrateManager {
                 plugin.getLogger().warning("Skipped a broken entry in data.yml: " + m);
             }
         }
+        ConfigurationSection hs = yml.getConfigurationSection("holograms");
+        if (hs != null) {
+            for (String k : hs.getKeys(false)) {
+                holoOverride.put(k.toLowerCase(Locale.ROOT), hs.getBoolean(k));
+            }
+        }
     }
 
     private void saveLinks() {
@@ -150,6 +179,9 @@ public final class CrateManager {
             list.add(m);
         }
         yml.set("links", list);
+        for (Map.Entry<String, Boolean> e : holoOverride.entrySet()) {
+            yml.set("holograms." + e.getKey(), e.getValue());
+        }
         try {
             plugin.getDataFolder().mkdirs();
             yml.save(dataFile);
@@ -187,6 +219,7 @@ public final class CrateManager {
         links.put(p, c.id);
         saveLinks();
         spawnHolos(p);
+        refreshPersonal();
     }
 
     public boolean unlink(Block b) {
@@ -199,8 +232,24 @@ public final class CrateManager {
 
     // ------------------------------------------------------------------ hologrammen
 
+    /** Staat het hologram van deze crate aan? Het commando wint van hologram.enable in de config. */
+    public boolean hologramOn(Crate c) {
+        return holoOverride.getOrDefault(c.id, c.hologramEnabled);
+    }
+
+    /** /crates hologram <crate> on|off. Blijft bewaard na een herstart. */
+    public void setHologram(Crate c, boolean on) {
+        holoOverride.put(c.id, on);
+        saveLinks();
+        for (Map.Entry<BlockPos, String> e : links.entrySet()) {
+            if (e.getValue().equals(c.id)) spawnHolos(e.getKey());
+        }
+        refreshPersonal();
+    }
+
     public void respawnAll() {
         for (BlockPos p : new ArrayList<>(links.keySet())) spawnHolos(p);
+        refreshPersonal();
     }
 
     public void chunkLoaded(Chunk ch) {
@@ -219,43 +268,175 @@ public final class CrateManager {
         }
     }
 
+    /** Zet de hologrammen neer die voor iedereen gelijk zijn. Die met een key-teller doet refreshPersonal. */
     private void spawnHolos(BlockPos p) {
         removeHolos(p);
         String id = links.get(p);
         Crate c = id == null ? null : crates.get(id);
-        if (c == null || c.holograms.isEmpty()) return;
+        if (c == null || !hologramOn(c)) return;
         World w = Bukkit.getWorld(p.world());
         if (w == null || !w.isChunkLoaded(p.cx(), p.cz())) return;
 
         List<UUID> ids = new ArrayList<>();
         for (Crate.Holo h : c.holograms) {
-            List<Component> lines = new ArrayList<>();
-            for (String l : h.lines()) lines.add(Msg.c(l));
-            Component text = Component.join(JoinConfiguration.newlines(), lines);
-            Location loc = new Location(w, p.x() + 0.5, p.y() + h.height(), p.z() + 0.5);
-            TextDisplay td = w.spawn(loc, TextDisplay.class, d -> {
-                d.text(text);
-                d.setBillboard(Display.Billboard.CENTER);
-                d.setAlignment(TextDisplay.TextAlignment.CENTER);
-                d.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
-                d.setPersistent(false);
-            });
-            ids.add(td.getUniqueId());
+            if (h.dynamic()) continue;
+            ids.add(spawnDisplay(w, p, h, String.join("\n", h.lines()), false).getUniqueId());
         }
         if (!ids.isEmpty()) holos.put(p, ids);
     }
 
-    private void removeHolos(BlockPos p) {
-        List<UUID> ids = holos.remove(p);
-        if (ids == null) return;
-        for (UUID id : ids) {
-            Entity e = Bukkit.getEntity(id);
-            if (e != null) e.remove();
+    private TextDisplay spawnDisplay(World w, BlockPos p, Crate.Holo h, String raw, boolean hidden) {
+        Component text = component(raw);
+        Location loc = new Location(w, p.x() + 0.5, p.y() + h.height(), p.z() + 0.5);
+        return w.spawn(loc, TextDisplay.class, d -> {
+            // verborgen vanaf het begin, zodat alleen de speler voor wie het bedoeld is het ooit te zien krijgt
+            if (hidden) d.setVisibleByDefault(false);
+            d.text(text);
+            d.setBillboard(Display.Billboard.CENTER);
+            d.setAlignment(TextDisplay.TextAlignment.CENTER);
+            d.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+            d.setPersistent(false);
+        });
+    }
+
+    private static Component component(String raw) {
+        List<Component> lines = new ArrayList<>();
+        for (String l : raw.split("\n", -1)) lines.add(Msg.c(l));
+        return Component.join(JoinConfiguration.newlines(), lines);
+    }
+
+    /**
+     * Elke 0,5 seconde: spelers binnen 32 blokken van een crate krijgen hun eigen hologram met hun eigen
+     * aantal keys. Spelers die weglopen, uitloggen of van wereld wisselen raken hun hologram weer kwijt.
+     */
+    public void refreshPersonal() {
+        for (Map.Entry<BlockPos, String> e : links.entrySet()) {
+            BlockPos p = e.getKey();
+            Crate c = crates.get(e.getValue());
+            World w = Bukkit.getWorld(p.world());
+
+            List<Crate.Holo> dyn = new ArrayList<>();
+            if (c != null && hologramOn(c)) {
+                for (Crate.Holo h : c.holograms) {
+                    if (h.dynamic()) dyn.add(h);
+                }
+            }
+            if (dyn.isEmpty() || w == null || !w.isChunkLoaded(p.cx(), p.cz())) {
+                removePersonal(p);
+                continue;
+            }
+
+            Map<UUID, List<UUID>> views = personal.computeIfAbsent(p, k -> new HashMap<>());
+            Location center = new Location(w, p.x() + 0.5, p.y() + 1.0, p.z() + 0.5);
+            Set<UUID> near = new HashSet<>();
+            for (Player pl : w.getPlayers()) {
+                if (pl.getLocation().distanceSquared(center) > VIEW_RANGE_SQ) continue;
+                near.add(pl.getUniqueId());
+                updateView(pl, w, p, c, dyn, views);
+            }
+
+            Iterator<Map.Entry<UUID, List<UUID>>> it = views.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<UUID, List<UUID>> v = it.next();
+                if (!near.contains(v.getKey())) {
+                    removeEntities(v.getValue());
+                    it.remove();
+                }
+            }
         }
     }
 
+    private void updateView(Player pl, World w, BlockPos p, Crate c, List<Crate.Holo> dyn,
+                            Map<UUID, List<UUID>> views) {
+        List<UUID> ids = views.get(pl.getUniqueId());
+        boolean ok = ids != null && ids.size() == dyn.size();
+        if (ok) {
+            for (UUID id : ids) {
+                Entity en = Bukkit.getEntity(id);
+                if (en == null || !en.isValid()) {
+                    ok = false;
+                    break;
+                }
+            }
+        }
+
+        if (!ok) {
+            if (ids != null) removeEntities(ids);
+            ids = new ArrayList<>();
+            for (Crate.Holo h : dyn) {
+                String raw = renderRaw(pl, c, h);
+                TextDisplay td = spawnDisplay(w, p, h, raw, true);
+                pl.showEntity(plugin, td);
+                lastText.put(td.getUniqueId(), raw);
+                ids.add(td.getUniqueId());
+            }
+            views.put(pl.getUniqueId(), ids);
+            return;
+        }
+
+        for (int i = 0; i < dyn.size(); i++) {
+            String raw = renderRaw(pl, c, dyn.get(i));
+            UUID id = ids.get(i);
+            if (raw.equals(lastText.get(id))) continue;
+            if (Bukkit.getEntity(id) instanceof TextDisplay td) {
+                td.text(component(raw));
+                lastText.put(id, raw);
+            }
+        }
+    }
+
+    /** Vult %keys%, %virtual%, %physical% en %crate_keys_<crate>% in met de aantallen van deze speler. */
+    private String renderRaw(Player viewer, Crate c, Crate.Holo h) {
+        int virt = virtual.get(viewer.getUniqueId(), c.id);
+        int phys = physicalKeys(viewer, c);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < h.lines().size(); i++) {
+            String line = h.lines().get(i)
+                    .replace("%keys%", String.valueOf(virt + phys))
+                    .replace("%virtual%", String.valueOf(virt))
+                    .replace("%physical%", String.valueOf(phys));
+            line = CRATE_KEYS.matcher(line).replaceAll(m -> {
+                Crate other = crates.get(m.group(1).toLowerCase(Locale.ROOT));
+                return other == null ? "0" : String.valueOf(totalKeys(viewer, other));
+            });
+            if (i > 0) sb.append('\n');
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+
+    private void removeEntities(List<UUID> ids) {
+        for (UUID id : ids) {
+            Entity e = Bukkit.getEntity(id);
+            if (e != null) e.remove();
+            lastText.remove(id);
+        }
+    }
+
+    private void removePersonal(BlockPos p) {
+        Map<UUID, List<UUID>> views = personal.remove(p);
+        if (views == null) return;
+        for (List<UUID> ids : views.values()) removeEntities(ids);
+    }
+
+    /** Haalt de persoonlijke hologrammen van één speler weg (bij uitloggen). */
+    public void removePlayerViews(UUID player) {
+        for (Map<UUID, List<UUID>> views : personal.values()) {
+            List<UUID> ids = views.remove(player);
+            if (ids != null) removeEntities(ids);
+        }
+    }
+
+    private void removeHolos(BlockPos p) {
+        List<UUID> ids = holos.remove(p);
+        if (ids != null) removeEntities(ids);
+        removePersonal(p);
+    }
+
     private void removeAllHolos() {
-        for (BlockPos p : new ArrayList<>(holos.keySet())) removeHolos(p);
+        Set<BlockPos> all = new HashSet<>(holos.keySet());
+        all.addAll(personal.keySet());
+        for (BlockPos p : all) removeHolos(p);
     }
 
     // ------------------------------------------------------------------ keys (physical + virtual)
@@ -272,6 +453,24 @@ public final class CrateManager {
     public String keyId(ItemStack it) {
         if (it == null || !it.hasItemMeta()) return null;
         return it.getItemMeta().getPersistentDataContainer().get(keyTag, PersistentDataType.STRING);
+    }
+
+    /** Aantal physical keys voor deze crate in de inventory (inclusief offhand). */
+    public int physicalKeys(Player p, Crate c) {
+        int n = 0;
+        PlayerInventory inv = p.getInventory();
+        for (int i = 0; i < 36; i++) {
+            ItemStack it = inv.getItem(i);
+            if (it != null && c.id.equals(keyId(it))) n += it.getAmount();
+        }
+        ItemStack off = inv.getItemInOffHand();
+        if (c.id.equals(keyId(off))) n += off.getAmount();
+        return n;
+    }
+
+    /** Virtual + physical keys. */
+    public int totalKeys(Player p, Crate c) {
+        return virtual.get(p.getUniqueId(), c.id) + physicalKeys(p, c);
     }
 
     /** Heeft de speler een virtual of physical key voor deze crate? */
@@ -402,6 +601,7 @@ public final class CrateManager {
     }
 
     public void shutdown() {
+        if (personalTask != null) personalTask.cancel();
         for (Spin s : new ArrayList<>(spins.values())) s.abort();
         removeAllHolos();
         virtual.shutdown();

@@ -10,16 +10,17 @@ common-crate:
       lore:
       - '&7With a ᴄᴏᴍᴍᴏɴ ᴋᴇʏ you can choose'
       - '&7which of the 7 you want.'
+  # Hologram above the crate. Lines with a key counter are shown per player, each player sees their own number:
+  # %keys% (virtual + physical), %virtual%, %physical% and %crate_keys_<crate>%.
+  # Turn it on/off with enable, or in-game with /crates hologram <crate> on|off (the command wins).
   hologram:
+    enable: true
     '1':
-      height: 1.1
-      lines:
-      - null
-      - null
-    '2':
       height: 1.5
       lines:
-      - null
+      - '&2ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
+      - '&2%crate_keys_common% &fKeys'
+      - '&f/store'
   rewards:
     '1':
       slot: 9

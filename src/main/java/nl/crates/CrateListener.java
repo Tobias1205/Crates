@@ -154,6 +154,7 @@ public final class CrateListener implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         Spin s = manager.spins.get(e.getPlayer().getUniqueId());
         if (s != null) s.finish(false);
+        manager.removePlayerViews(e.getPlayer().getUniqueId());
         manager.virtual().evict(e.getPlayer().getUniqueId());
     }
 
