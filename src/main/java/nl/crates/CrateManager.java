@@ -295,6 +295,8 @@ public final class CrateManager {
             d.setBillboard(Display.Billboard.CENTER);
             d.setAlignment(TextDisplay.TextAlignment.CENTER);
             d.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+            // volle helderheid: anders dimt het licht om het blok (nacht, schaduw) de tekst en lijkt de kleur anders
+            d.setBrightness(new Display.Brightness(15, 15));
             d.setPersistent(false);
         });
     }

@@ -21,7 +21,7 @@ public final class Msg {
             .hexColors()
             .build();
 
-    private static final String PREFIX = "&#A20AD6crates &8» &7";
+    private static final String PREFIX = "&5crates &8» &7";
     private static final String[] LANGS = {"en", "nl", "de", "fr", "es"};
     private static final Map<String, String[]> M = new HashMap<>();
 
