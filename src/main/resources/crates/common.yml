@@ -16,7 +16,7 @@ common-crate:
   hologram:
     enable: true
     '1':
-      height: 1.5
+      height: 1.2
       lines:
       - '&2ᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ'
       - '&2%crate_keys_common% &fKeys'

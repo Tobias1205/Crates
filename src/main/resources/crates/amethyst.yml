@@ -16,7 +16,7 @@ amethyst-crate:
   hologram:
     enable: true
     '1':
-      height: 1.5
+      height: 1.2
       lines:
       - '&5ᴀᴍᴇᴛʜʏsᴛ ᴄʀᴀᴛᴇ'
       - '&5%crate_keys_amethyst% &fKeys'

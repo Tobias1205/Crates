@@ -16,7 +16,7 @@ gold-crate:
   hologram:
     enable: true
     '1':
-      height: 1.5
+      height: 1.2
       lines:
       - '&6ɢᴏʟᴅ ᴄʀᴀᴛᴇ'
       - '&6%crate_keys_gold% &fKeys'

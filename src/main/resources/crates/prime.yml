@@ -16,7 +16,7 @@ prime-crate:
   hologram:
     enable: true
     '1':
-      height: 1.5
+      height: 1.2
       lines:
       - '&3ᴘʀɪᴍᴇ ᴄʀᴀᴛᴇ'
       - '&3%crate_keys_prime% &fKeys'

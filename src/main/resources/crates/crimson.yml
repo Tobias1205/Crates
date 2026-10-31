@@ -16,7 +16,7 @@ crimson-crate:
   hologram:
     enable: true
     '1':
-      height: 1.5
+      height: 1.2
       lines:
       - '&4ᴄʀɪᴍsᴏɴ ᴄʀᴀᴛᴇ'
       - '&4%crate_keys_crimson% &fKeys'
