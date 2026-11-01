@@ -8,6 +8,12 @@ theme-colors:
   - "#FF981B"
   - "#FF8C00"
 
+# Rewards that run a command from one of these plugins already send the player their own message
+# ("you received ..."). For those rewards Crates does not send a second message, so there are no double messages.
+# Add the command name (the first word, without /) of every plugin that does this.
+silent-commands:
+  - tools
+
 # Keyall: players receive keys for the time they are online on the server.
 #
 # The timer is per player and per key. It only runs while the player is online: it stops when they leave and

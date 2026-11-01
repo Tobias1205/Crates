@@ -160,17 +160,17 @@ public final class Msg {
                 "Utilisation : /crates hologram <crate> <on|off>",
                 "Uso: /crates hologram <crate> <on|off>");
         m("hologram_on",
-                "The hologram of the {0} crate is now on.",
-                "Het hologram van de {0} crate staat nu aan.",
-                "Das Hologramm der {0}-Crate ist jetzt an.",
-                "L'hologramme de la crate {0} est maintenant activé.",
-                "El holograma de la crate {0} ahora está activado.");
+                "The hologram of the <g>{0}</g> crate is now on.",
+                "Het hologram van de <g>{0}</g> crate staat nu aan.",
+                "Das Hologramm der <g>{0}</g>-Crate ist jetzt an.",
+                "L'hologramme de la crate <g>{0}</g> est maintenant activé.",
+                "El holograma de la crate <g>{0}</g> ahora está activado.");
         m("hologram_off",
-                "The hologram of the {0} crate is now off.",
-                "Het hologram van de {0} crate staat nu uit.",
-                "Das Hologramm der {0}-Crate ist jetzt aus.",
-                "L'hologramme de la crate {0} est maintenant désactivé.",
-                "El holograma de la crate {0} ahora está desactivado.");
+                "The hologram of the <g>{0}</g> crate is now off.",
+                "Het hologram van de <g>{0}</g> crate staat nu uit.",
+                "Das Hologramm der <g>{0}</g>-Crate ist jetzt aus.",
+                "L'hologramme de la crate <g>{0}</g> est maintenant désactivé.",
+                "El holograma de la crate <g>{0}</g> ahora está desactivado.");
         m("keyall_next",
                 "&7next key in <g>{0}</g>",
                 "&7volgende key over <g>{0}</g>",
@@ -178,17 +178,17 @@ public final class Msg {
                 "&7prochaine key dans <g>{0}</g>",
                 "&7próxima key en <g>{0}</g>");
         m("key_given_virtual",
-                "Gave <g>{0}x</g> {1}&7 (virtual) to {2}.",
-                "<g>{0}x</g> {1}&7 (virtueel) gegeven aan {2}.",
-                "<g>{0}x</g> {1}&7 (virtuell) an {2} gegeben.",
-                "<g>{0}x</g> {1}&7 (virtuelle) donné à {2}.",
-                "Se dieron <g>{0}x</g> {1}&7 (virtual) a {2}.");
+                "Gave <g>{0}x</g> {1}&7 (virtual) to <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (virtueel) gegeven aan <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (virtuell) an <g>{2}</g> gegeben.",
+                "<g>{0}x</g> {1}&7 (virtuelle) donné à <g>{2}</g>.",
+                "Se dieron <g>{0}x</g> {1}&7 (virtual) a <g>{2}</g>.");
         m("key_given_physical",
-                "Gave <g>{0}x</g> {1}&7 (physical) to {2}.",
-                "<g>{0}x</g> {1}&7 (fysiek) gegeven aan {2}.",
-                "<g>{0}x</g> {1}&7 (physisch) an {2} gegeben.",
-                "<g>{0}x</g> {1}&7 (physique) donné à {2}.",
-                "Se dieron <g>{0}x</g> {1}&7 (físico) a {2}.");
+                "Gave <g>{0}x</g> {1}&7 (physical) to <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (fysiek) gegeven aan <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (physisch) an <g>{2}</g> gegeben.",
+                "<g>{0}x</g> {1}&7 (physique) donné à <g>{2}</g>.",
+                "Se dieron <g>{0}x</g> {1}&7 (físico) a <g>{2}</g>.");
         m("key_received_virtual",
                 "You received <g>{0}x</g> {1}&7 (virtual).",
                 "Je hebt <g>{0}x</g> {1}&7 (virtueel) ontvangen.",
@@ -202,18 +202,18 @@ public final class Msg {
                 "Tu as reçu <g>{0}x</g> {1}&7 (physique).",
                 "Has recibido <g>{0}x</g> {1}&7 (físico).");
         m("keys_header",
-                "Your virtual keys:",
-                "Jouw virtuele keys:",
-                "Deine virtuellen Keys:",
-                "Tes clés virtuelles :",
-                "Tus llaves virtuales:");
+                "<g>Your virtual keys:</g>",
+                "<g>Jouw virtuele keys:</g>",
+                "<g>Deine virtuellen Keys:</g>",
+                "<g>Tes clés virtuelles :</g>",
+                "<g>Tus llaves virtuales:</g>");
         m("keys_none",
                 "You have no virtual keys.",
                 "Je hebt geen virtuele keys.",
                 "Du hast keine virtuellen Keys.",
                 "Tu n'as aucune clé virtuelle.",
                 "No tienes llaves virtuales.");
-        String keysEntry = "&8- {0}&7: &f{1}";
+        String keysEntry = "&8- {0}&7: <g>{1}</g>";
         m("keys_entry", keysEntry, keysEntry, keysEntry, keysEntry, keysEntry);
         m("confirm_title",
                 "Confirm reward",
@@ -246,17 +246,17 @@ public final class Msg {
                 "Clique pour revenir.",
                 "Haz clic para volver.");
         m("broadcast",
-                "&f{0} &7just won {1}&7 from the {2}&7!",
-                "&f{0} &7heeft zojuist {1}&7 gewonnen uit de {2}&7!",
-                "&f{0} &7hat gerade {1}&7 aus der {2}&7 gewonnen!",
-                "&f{0} &7vient de gagner {1}&7 dans la {2}&7 !",
-                "&f{0} &7acaba de ganar {1}&7 de la {2}&7!");
+                "<g>{0}</g> &7just won {1}&7 from the {2}&7!",
+                "<g>{0}</g> &7heeft zojuist {1}&7 gewonnen uit de {2}&7!",
+                "<g>{0}</g> &7hat gerade {1}&7 aus der {2}&7 gewonnen!",
+                "<g>{0}</g> &7vient de gagner {1}&7 dans la {2}&7 !",
+                "<g>{0}</g> &7acaba de ganar {1}&7 de la {2}&7!");
         m("unknown_crate",
-                "Unknown crate: {0}",
-                "Onbekende crate: {0}",
-                "Unbekannte Crate: {0}",
-                "Crate inconnue : {0}",
-                "Crate desconocida: {0}");
+                "Unknown crate: <g>{0}</g>",
+                "Onbekende crate: <g>{0}</g>",
+                "Unbekannte Crate: <g>{0}</g>",
+                "Crate inconnue : <g>{0}</g>",
+                "Crate desconocida: <g>{0}</g>");
         m("not_looking",
                 "Look at a block first.",
                 "Kijk eerst naar een blok.",
@@ -264,11 +264,11 @@ public final class Msg {
                 "Regarde d'abord un bloc.",
                 "Mira primero un bloque.");
         m("linked",
-                "This block is now linked to the {0} crate.",
-                "Dit blok is nu gekoppeld aan de {0} crate.",
-                "Dieser Block ist jetzt mit der {0}-Crate verknüpft.",
-                "Ce bloc est maintenant lié à la crate {0}.",
-                "Este bloque ahora está vinculado a la crate {0}.");
+                "This block is now linked to the <g>{0}</g> crate.",
+                "Dit blok is nu gekoppeld aan de <g>{0}</g> crate.",
+                "Dieser Block ist jetzt mit der <g>{0}</g>-Crate verknüpft.",
+                "Ce bloc est maintenant lié à la crate <g>{0}</g>.",
+                "Este bloque ahora está vinculado a la crate <g>{0}</g>.");
         m("unlinked",
                 "This block is no longer linked to a crate.",
                 "Dit blok is niet meer gekoppeld aan een crate.",
@@ -294,11 +294,11 @@ public final class Msg {
                 "Tu as reçu {0}&7.",
                 "Has recibido {0}&7.");
         m("key_given",
-                "Gave <g>{0}x</g> {1}&7 to {2}.",
-                "<g>{0}x</g> {1}&7 gegeven aan {2}.",
-                "<g>{0}x</g> {1}&7 an {2} gegeben.",
-                "<g>{0}x</g> {1}&7 donné à {2}.",
-                "Se dieron <g>{0}x</g> {1}&7 a {2}.");
+                "Gave <g>{0}x</g> {1}&7 to <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 gegeven aan <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 an <g>{2}</g> gegeben.",
+                "<g>{0}x</g> {1}&7 donné à <g>{2}</g>.",
+                "Se dieron <g>{0}x</g> {1}&7 a <g>{2}</g>.");
         m("key_received",
                 "You received <g>{0}x</g> {1}&7.",
                 "Je hebt <g>{0}x</g> {1}&7 ontvangen.",
@@ -324,11 +324,11 @@ public final class Msg {
                 "Tu es déjà en train d'ouvrir une crate.",
                 "Ya estás abriendo una crate.");
         m("player_not_found",
-                "Player not found: {0}",
-                "Speler niet gevonden: {0}",
-                "Spieler nicht gefunden: {0}",
-                "Joueur introuvable : {0}",
-                "Jugador no encontrado: {0}");
+                "Player not found: <g>{0}</g>",
+                "Speler niet gevonden: <g>{0}</g>",
+                "Spieler nicht gefunden: <g>{0}</g>",
+                "Joueur introuvable : <g>{0}</g>",
+                "Jugador no encontrado: <g>{0}</g>");
         m("invalid_amount",
                 "Invalid amount.",
                 "Ongeldig aantal.",
@@ -342,12 +342,12 @@ public final class Msg {
                 "Aucun bloc n'est encore lié à une crate.",
                 "Todavía no hay bloques vinculados a una crate.");
         m("list_header",
-                "Linked crates:",
-                "Gekoppelde crates:",
-                "Verknüpfte Crates:",
-                "Crates liées :",
-                "Crates vinculadas:");
-        String entry = "&8- &f{0} &7({1}: {2}, {3}, {4})";
+                "<g>Linked crates:</g>",
+                "<g>Gekoppelde crates:</g>",
+                "<g>Verknüpfte Crates:</g>",
+                "<g>Crates liées :</g>",
+                "<g>Crates vinculadas:</g>");
+        String entry = "&8- <g>{0}</g> &7({1}: {2}, {3}, {4})";
         m("list_entry", entry, entry, entry, entry, entry);
     }
 }

@@ -586,7 +586,7 @@ public final class CrateManager {
     private ItemStack button(Material material, String color, Player p, String nameKey, String loreKey) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Msg.c(color + Msg.smallCaps(Msg.text(p, nameKey))));
+        meta.displayName(Msg.c("<g>" + Msg.smallCaps(Msg.text(p, nameKey)) + "</g>"));
         meta.lore(List.of(Msg.c("&7" + Msg.text(p, loreKey))));
         item.setItemMeta(meta);
         return item;
@@ -617,7 +617,9 @@ public final class CrateManager {
             }
         }
         String name = r.icon().name != null ? r.icon().name : r.icon().material.name();
-        Msg.send(p, "reward", name);
+        // Geeft het command (bijvoorbeeld "tools give") zelf al een melding aan de speler, dan sturen wij er geen
+        // tweede. Welke commands dat zijn staat bij silent-commands in config.yml.
+        if (!selfAnnouncing(r)) Msg.send(p, "reward", name);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
 
         if (r.icon().broadcast) {
@@ -625,6 +627,28 @@ public final class CrateManager {
                 Msg.send(online, "broadcast", p.getName(), name, c.displayName());
             }
         }
+    }
+
+    /** true als alle commands van deze reward van een plugin zijn die zelf een melding aan de speler stuurt. */
+    private boolean selfAnnouncing(Crate.Reward r) {
+        if (r.commands().isEmpty()) return false;
+        List<String> silent = plugin.getConfig().contains("silent-commands")
+                ? plugin.getConfig().getStringList("silent-commands")
+                : List.of("tools");
+        for (String cmd : r.commands()) {
+            String label = cmd.trim().split("\\s+")[0].toLowerCase(Locale.ROOT);
+            int colon = label.indexOf(':');
+            if (colon >= 0) label = label.substring(colon + 1);
+            boolean found = false;
+            for (String s : silent) {
+                if (s != null && s.trim().equalsIgnoreCase(label)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
     }
 
     public void shutdown() {
