@@ -90,7 +90,6 @@ public final class CrateListener implements Listener {
             if (e.getClickedInventory() != e.getInventory() || ch.used) return;
             int slot = e.getSlot();
             if (slot == CrateManager.CONFIRM_SLOT) {
-                click(clicker);
                 confirm(clicker, ch);
             } else if (slot == CrateManager.CANCEL_SLOT) {
                 click(clicker);

@@ -21,7 +21,7 @@ public final class Msg {
             .hexColors()
             .build();
 
-    private static final String PREFIX = "<g>crates</g> &8» &7";
+    private static final String PREFIX = "<g>Crates</g> &8» &7";
     private static final Pattern GRAD = Pattern.compile("<g>(.*?)</g>");
     private static final String[] DEFAULT_THEME = {"#FFB347", "#FFA531", "#FF981B", "#FF8C00"};
     /** Themakleuren (kleurverloop van licht- naar donkeroranje), instelbaar met theme-colors in config.yml. */
