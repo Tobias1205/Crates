@@ -21,16 +21,65 @@ public final class Msg {
             .hexColors()
             .build();
 
-    private static final String PREFIX = "&5crates &8» &7";
+    private static final String PREFIX = "<g>crates</g> &8» &7";
+    private static final Pattern GRAD = Pattern.compile("<g>(.*?)</g>");
+    private static final String[] DEFAULT_THEME = {"#FFB347", "#FFA531", "#FF981B", "#FF8C00"};
+    /** Themakleuren (kleurverloop van licht- naar donkeroranje), instelbaar met theme-colors in config.yml. */
+    private static volatile int[][] theme = parseTheme(java.util.List.of(DEFAULT_THEME));
     private static final String[] LANGS = {"en", "nl", "de", "fr", "es"};
     private static final Map<String, String[]> M = new HashMap<>();
 
     private Msg() {
     }
 
+    /** Stelt de kleuren van het kleurverloop in (hex, bv. #FFB347). Ongeldige lijst = standaard oranje. */
+    public static void setTheme(java.util.List<String> hexes) {
+        theme = parseTheme(hexes);
+    }
+
+    private static int[][] parseTheme(java.util.List<String> hexes) {
+        java.util.List<int[]> out = new java.util.ArrayList<>();
+        if (hexes != null) {
+            for (String h : hexes) {
+                if (h != null && h.trim().matches("#[0-9a-fA-F]{6}")) {
+                    int v = Integer.parseInt(h.trim().substring(1), 16);
+                    out.add(new int[]{(v >> 16) & 255, (v >> 8) & 255, v & 255});
+                }
+            }
+        }
+        if (out.isEmpty()) return parseTheme(java.util.List.of(DEFAULT_THEME));
+        return out.toArray(new int[0][]);
+    }
+
+    /** Geeft elke letter een eigen kleur uit het kleurverloop; daarna terug naar grijs (&7). */
+    static String gradient(String text) {
+        text = LEGACY.matcher(text).replaceAll("");
+        int[][] cols = theme;
+        int n = text.length();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            char ch = text.charAt(i);
+            if (ch == ' ') {
+                sb.append(ch);
+                continue;
+            }
+            double t = n <= 1 ? 0 : (double) i / (n - 1);
+            double pos = t * (cols.length - 1);
+            int a = (int) Math.floor(pos);
+            int b = Math.min(a + 1, cols.length - 1);
+            double f = pos - a;
+            int r = (int) Math.round(cols[a][0] + (cols[b][0] - cols[a][0]) * f);
+            int g = (int) Math.round(cols[a][1] + (cols[b][1] - cols[a][1]) * f);
+            int bl = (int) Math.round(cols[a][2] + (cols[b][2] - cols[a][2]) * f);
+            sb.append(String.format("&#%02X%02X%02X", r, g, bl)).append(ch);
+        }
+        return sb.append("&7").toString();
+    }
+
     /** Zet &-codes en hex om naar een Component, zonder bold en zonder cursieve standaardstijl. */
     public static Component c(String s) {
         if (s == null) return Component.empty();
+        s = GRAD.matcher(s).replaceAll(m -> java.util.regex.Matcher.quoteReplacement(gradient(m.group(1))));
         s = HEX.matcher(s).replaceAll("§#$1");
         s = LEGACY.matcher(s).replaceAll("§$1");
         s = BOLD.matcher(s).replaceAll("");
@@ -122,36 +171,36 @@ public final class Msg {
                 "Das Hologramm der {0}-Crate ist jetzt aus.",
                 "L'hologramme de la crate {0} est maintenant désactivé.",
                 "El holograma de la crate {0} ahora está desactivado.");
-        m("keyall_received",
-                "Keyall: you received {0}x {1}&7!",
-                "Keyall: je hebt {0}x {1}&7 ontvangen!",
-                "Keyall: Du hast {0}x {1}&7 erhalten!",
-                "Keyall : tu as reçu {0}x {1}&7 !",
-                "Keyall: ¡has recibido {0}x {1}&7!");
+        m("keyall_next",
+                "&7next key in <g>{0}</g>",
+                "&7volgende key over <g>{0}</g>",
+                "&7nächster Key in <g>{0}</g>",
+                "&7prochaine key dans <g>{0}</g>",
+                "&7próxima key en <g>{0}</g>");
         m("key_given_virtual",
-                "Gave {0}x {1}&7 (virtual) to {2}.",
-                "{0}x {1}&7 (virtueel) gegeven aan {2}.",
-                "{0}x {1}&7 (virtuell) an {2} gegeben.",
-                "{0}x {1}&7 (virtuelle) donné à {2}.",
-                "Se dieron {0}x {1}&7 (virtual) a {2}.");
+                "Gave <g>{0}x</g> {1}&7 (virtual) to {2}.",
+                "<g>{0}x</g> {1}&7 (virtueel) gegeven aan {2}.",
+                "<g>{0}x</g> {1}&7 (virtuell) an {2} gegeben.",
+                "<g>{0}x</g> {1}&7 (virtuelle) donné à {2}.",
+                "Se dieron <g>{0}x</g> {1}&7 (virtual) a {2}.");
         m("key_given_physical",
-                "Gave {0}x {1}&7 (physical) to {2}.",
-                "{0}x {1}&7 (fysiek) gegeven aan {2}.",
-                "{0}x {1}&7 (physisch) an {2} gegeben.",
-                "{0}x {1}&7 (physique) donné à {2}.",
-                "Se dieron {0}x {1}&7 (físico) a {2}.");
+                "Gave <g>{0}x</g> {1}&7 (physical) to {2}.",
+                "<g>{0}x</g> {1}&7 (fysiek) gegeven aan {2}.",
+                "<g>{0}x</g> {1}&7 (physisch) an {2} gegeben.",
+                "<g>{0}x</g> {1}&7 (physique) donné à {2}.",
+                "Se dieron <g>{0}x</g> {1}&7 (físico) a {2}.");
         m("key_received_virtual",
-                "You received {0}x {1}&7 (virtual).",
-                "Je hebt {0}x {1}&7 (virtueel) ontvangen.",
-                "Du hast {0}x {1}&7 (virtuell) erhalten.",
-                "Tu as reçu {0}x {1}&7 (virtuelle).",
-                "Has recibido {0}x {1}&7 (virtual).");
+                "You received <g>{0}x</g> {1}&7 (virtual).",
+                "Je hebt <g>{0}x</g> {1}&7 (virtueel) ontvangen.",
+                "Du hast <g>{0}x</g> {1}&7 (virtuell) erhalten.",
+                "Tu as reçu <g>{0}x</g> {1}&7 (virtuelle).",
+                "Has recibido <g>{0}x</g> {1}&7 (virtual).");
         m("key_received_physical",
-                "You received {0}x {1}&7 (physical).",
-                "Je hebt {0}x {1}&7 (fysiek) ontvangen.",
-                "Du hast {0}x {1}&7 (physisch) erhalten.",
-                "Tu as reçu {0}x {1}&7 (physique).",
-                "Has recibido {0}x {1}&7 (físico).");
+                "You received <g>{0}x</g> {1}&7 (physical).",
+                "Je hebt <g>{0}x</g> {1}&7 (fysiek) ontvangen.",
+                "Du hast <g>{0}x</g> {1}&7 (physisch) erhalten.",
+                "Tu as reçu <g>{0}x</g> {1}&7 (physique).",
+                "Has recibido <g>{0}x</g> {1}&7 (físico).");
         m("keys_header",
                 "Your virtual keys:",
                 "Jouw virtuele keys:",
@@ -245,17 +294,17 @@ public final class Msg {
                 "Tu as reçu {0}&7.",
                 "Has recibido {0}&7.");
         m("key_given",
-                "Gave {0}x {1}&7 to {2}.",
-                "{0}x {1}&7 gegeven aan {2}.",
-                "{0}x {1}&7 an {2} gegeben.",
-                "{0}x {1}&7 donné à {2}.",
-                "Se dieron {0}x {1}&7 a {2}.");
+                "Gave <g>{0}x</g> {1}&7 to {2}.",
+                "<g>{0}x</g> {1}&7 gegeven aan {2}.",
+                "<g>{0}x</g> {1}&7 an {2} gegeben.",
+                "<g>{0}x</g> {1}&7 donné à {2}.",
+                "Se dieron <g>{0}x</g> {1}&7 a {2}.");
         m("key_received",
-                "You received {0}x {1}&7.",
-                "Je hebt {0}x {1}&7 ontvangen.",
-                "Du hast {0}x {1}&7 erhalten.",
-                "Tu as reçu {0}x {1}&7.",
-                "Has recibido {0}x {1}&7.");
+                "You received <g>{0}x</g> {1}&7.",
+                "Je hebt <g>{0}x</g> {1}&7 ontvangen.",
+                "Du hast <g>{0}x</g> {1}&7 erhalten.",
+                "Tu as reçu <g>{0}x</g> {1}&7.",
+                "Has recibido <g>{0}x</g> {1}&7.");
         m("reloaded",
                 "Configuration reloaded.",
                 "Configuratie opnieuw geladen.",

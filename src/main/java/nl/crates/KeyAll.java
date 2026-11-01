@@ -160,8 +160,26 @@ public final class KeyAll {
         } else {
             manager.giveKeys(p, c, total);
         }
-        Msg.send(p, "keyall_received", String.valueOf(total), c.keyName());
+        // melding: een klein kader in de chat, plus dezelfde regel kort in de actionbar
+        String line = "<g>+" + total + "x</g> " + c.keyName();
+        p.sendMessage(Msg.c("&8&m      &r <g>" + Msg.smallCaps("keyall") + "</g> &8&m      "));
+        p.sendMessage(Msg.c("  " + line));
+        p.sendMessage(Msg.c("  " + Msg.text(p, "keyall_next", formatInterval(e.intervalMs()))));
+        p.sendMessage(Msg.c("&8&m                    "));
+        p.sendActionBar(Msg.c(line));
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+    }
+
+    /** Korte schrijfwijze van het interval: 1h, 30m, 2h 30m. */
+    static String formatInterval(long ms) {
+        long s = ms / 1000L;
+        StringBuilder sb = new StringBuilder();
+        long d = s / 86400L, h = (s % 86400L) / 3600L, m = (s % 3600L) / 60L, sec = s % 60L;
+        if (d > 0) sb.append(d).append("d ");
+        if (h > 0) sb.append(h).append("h ");
+        if (m > 0) sb.append(m).append("m ");
+        if (sec > 0) sb.append(sec).append("s ");
+        return sb.toString().trim();
     }
 
     // ------------------------------------------------------------------ placeholder

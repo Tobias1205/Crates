@@ -11,6 +11,7 @@ public final class CratesPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig(); // config.yml (keyall) wordt alleen aangemaakt als hij er nog niet is
+        Msg.setTheme(getConfig().getStringList("theme-colors"));
         manager = new CrateManager(this);
         manager.loadAll();
 

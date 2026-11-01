@@ -124,6 +124,7 @@ public final class CrateManager {
         holoOverride.clear();
         loadAll();
         keyAll.reload();
+        Msg.setTheme(plugin.getConfig().getStringList("theme-colors"));
         respawnAll();
     }
 

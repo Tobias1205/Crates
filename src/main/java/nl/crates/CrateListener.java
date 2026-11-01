@@ -2,6 +2,7 @@ package nl.crates;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -89,8 +90,10 @@ public final class CrateListener implements Listener {
             if (e.getClickedInventory() != e.getInventory() || ch.used) return;
             int slot = e.getSlot();
             if (slot == CrateManager.CONFIRM_SLOT) {
+                click(clicker);
                 confirm(clicker, ch);
             } else if (slot == CrateManager.CANCEL_SLOT) {
+                click(clicker);
                 ch.used = true;
                 Bukkit.getScheduler().runTask(plugin, () -> manager.open(clicker, ch.crate, false));
             }
@@ -109,6 +112,7 @@ public final class CrateListener implements Listener {
         Crate c = h.crate;
 
         if (c.backEnabled && slot == c.backSlot) {
+            click(p);
             Bukkit.getScheduler().runTask(plugin, () -> p.closeInventory());
             return;
         }
@@ -123,7 +127,13 @@ public final class CrateListener implements Listener {
             p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.7f, 1f);
             return;
         }
+        click(p);
         Bukkit.getScheduler().runTask(plugin, () -> manager.openConfirm(p, c, r));
+    }
+
+    /** Het klikgeluid van Minecraft zelf, zoals bij de knoppen in je instellingen. */
+    private static void click(Player p) {
+        p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1f, 1f);
     }
 
     private void confirm(Player p, ConfirmHolder ch) {

@@ -1,5 +1,13 @@
 # Crates config
 
+# Colours of the messages (prefix, amounts, keyall): a gradient from light to dark orange, like the sell plugin.
+# One colour gives a plain colour. Change this, then use /crates reload.
+theme-colors:
+  - "#FFB347"
+  - "#FFA531"
+  - "#FF981B"
+  - "#FF8C00"
+
 # Keyall: players receive keys for the time they are online on the server.
 #
 # The timer is per player and per key. It only runs while the player is online: it stops when they leave and
