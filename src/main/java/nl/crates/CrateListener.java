@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -155,7 +156,14 @@ public final class CrateListener implements Listener {
         Spin s = manager.spins.get(e.getPlayer().getUniqueId());
         if (s != null) s.finish(false);
         manager.removePlayerViews(e.getPlayer().getUniqueId());
+        manager.keyAll().quit(e.getPlayer());
         manager.virtual().evict(e.getPlayer().getUniqueId());
+    }
+
+    /** De keyall-timer van deze speler gaat verder waar hij bleef toen de speler wegging. */
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        manager.keyAll().join(e.getPlayer());
     }
 
     // ------------------------------------------------------------------ keys en bescherming

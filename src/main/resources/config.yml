@@ -1,0 +1,25 @@
+# Crates config
+
+# Keyall: players receive keys for the time they are online on the server.
+#
+# The timer is per player and per key. It only runs while the player is online: it stops when they leave and
+# continues where it stopped when they join again, so leaving and rejoining does not give a key any faster.
+# The progress is saved per player and survives restarts.
+#
+# Show the time until the next key anywhere PlaceholderAPI works (tab, scoreboard, ...) with %keyall_<crate>%,
+# for example %keyall_common% shows 42m 17s. This needs the PlaceholderAPI plugin on the server.
+#
+# Change this file, then use /crates reload.
+keyall:
+  enabled: true
+  keys:
+    # crate id: the part before "-crate" in the crate files (amethyst, common, gold, crimson, prime, ...)
+    common:
+      interval: 1h      # time between two keys, for example 30m, 1h, 2h30m or 1d
+      amount: 1         # how many keys every time
+      type: virtual     # virtual (shown with /keys) or physical (a key item in the inventory)
+    # More keys, each with its own timer:
+    # amethyst:
+    #   interval: 24h
+    #   amount: 1
+    #   type: virtual

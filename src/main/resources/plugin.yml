@@ -3,6 +3,7 @@ main: nl.crates.CratesPlugin
 version: ${project.version}
 api-version: '1.21'
 description: Crates (common, gold, amethyst, crimson, prime) die je aan blokken koppelt
+softdepend: [PlaceholderAPI]
 commands:
   crates:
     description: Beheer crates

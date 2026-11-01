@@ -122,6 +122,12 @@ public final class Msg {
                 "Das Hologramm der {0}-Crate ist jetzt aus.",
                 "L'hologramme de la crate {0} est maintenant désactivé.",
                 "El holograma de la crate {0} ahora está desactivado.");
+        m("keyall_received",
+                "Keyall: you received {0}x {1}&7!",
+                "Keyall: je hebt {0}x {1}&7 ontvangen!",
+                "Keyall: Du hast {0}x {1}&7 erhalten!",
+                "Keyall : tu as reçu {0}x {1}&7 !",
+                "Keyall: ¡has recibido {0}x {1}&7!");
         m("key_given_virtual",
                 "Gave {0}x {1}&7 (virtual) to {2}.",
                 "{0}x {1}&7 (virtueel) gegeven aan {2}.",

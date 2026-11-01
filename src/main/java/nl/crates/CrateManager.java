@@ -74,6 +74,7 @@ public final class CrateManager {
     private final CratesPlugin plugin;
     private final NamespacedKey keyTag;
     private final VirtualKeys virtual;
+    private final KeyAll keyAll;
     private final Map<String, Crate> crates = new LinkedHashMap<>();
     private final Map<BlockPos, String> links = new LinkedHashMap<>();
     /** Hologrammen die voor iedereen hetzelfde zijn: één entity per hologram. */
@@ -91,6 +92,7 @@ public final class CrateManager {
         this.plugin = plugin;
         this.keyTag = new NamespacedKey(plugin, "crate_key");
         this.virtual = new VirtualKeys(plugin);
+        this.keyAll = new KeyAll(plugin, this);
         this.dataFile = new File(plugin.getDataFolder(), "data.yml");
     }
 
@@ -98,9 +100,14 @@ public final class CrateManager {
         return virtual;
     }
 
-    /** Start de taak die de hologrammen per speler bijhoudt (elke 0,5 seconde). */
+    public KeyAll keyAll() {
+        return keyAll;
+    }
+
+    /** Start de taak die de hologrammen per speler bijhoudt (elke 0,5 seconde) en de keyall-timer. */
     public void start() {
         personalTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> refreshPersonal(), 20L, 10L);
+        keyAll.start();
     }
 
     // ------------------------------------------------------------------ laden
@@ -116,6 +123,7 @@ public final class CrateManager {
         links.clear();
         holoOverride.clear();
         loadAll();
+        keyAll.reload();
         respawnAll();
     }
 
@@ -622,6 +630,7 @@ public final class CrateManager {
         if (personalTask != null) personalTask.cancel();
         for (Spin s : new ArrayList<>(spins.values())) s.abort();
         removeAllHolos();
+        keyAll.shutdown();
         virtual.shutdown();
     }
 }

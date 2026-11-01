@@ -10,6 +10,7 @@ public final class CratesPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig(); // config.yml (keyall) wordt alleen aangemaakt als hij er nog niet is
         manager = new CrateManager(this);
         manager.loadAll();
 
@@ -27,6 +28,14 @@ public final class CratesPlugin extends JavaPlugin {
         // één tick later, zodat alle werelden zeker geladen zijn
         Bukkit.getScheduler().runTask(this, () -> manager.respawnAll());
         manager.start();
+
+        // %keyall_<crate>% bestaat alleen als PlaceholderAPI op de server staat
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            KeyAllExpansion.hook(manager.keyAll());
+            getLogger().info("PlaceholderAPI found: %keyall_<crate>% is available.");
+        } else {
+            getLogger().info("PlaceholderAPI not found: %keyall_<crate>% is not available (keyall itself works).");
+        }
     }
 
     @Override
