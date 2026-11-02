@@ -279,11 +279,11 @@ public final class Msg {
                 "Clique pour revenir.",
                 "Haz clic para volver.");
         m("broadcast",
-                "<g>{0}</g> &7just won {1}&7 from the {2}&7!",
-                "<g>{0}</g> &7heeft zojuist {1}&7 gewonnen uit de {2}&7!",
-                "<g>{0}</g> &7hat gerade {1}&7 aus der {2}&7 gewonnen!",
-                "<g>{0}</g> &7vient de gagner {1}&7 dans la {2}&7 !",
-                "<g>{0}</g> &7acaba de ganar {1}&7 de la {2}&7!");
+                "<g>{0} just won</g> {1}&7 <g>from the</g> {2}&7<g>!</g>",
+                "<g>{0} heeft zojuist</g> {1}&7 <g>gewonnen uit de</g> {2}&7<g>!</g>",
+                "<g>{0} hat gerade</g> {1}&7 <g>aus der</g> {2}&7 <g>gewonnen!</g>",
+                "<g>{0} vient de gagner</g> {1}&7 <g>dans la</g> {2}&7 <g>!</g>",
+                "<g>{0} acaba de ganar</g> {1}&7 <g>de la</g> {2}&7<g>!</g>");
         m("unknown_crate",
                 "&cUnknown crate: &f{0}",
                 "&cOnbekende crate: &f{0}",
@@ -315,17 +315,17 @@ public final class Msg {
                 "&cCe bloc n'est lié à aucune crate.",
                 "&cEste bloque no está vinculado a ninguna crate.");
         m("no_key",
-                "&cYou need a {0}&c to use this crate.",
-                "&cJe hebt een {0}&c nodig voor deze crate.",
-                "&cDu brauchst einen {0}&c für diese Crate.",
-                "&cIl te faut une {0}&c pour cette crate.",
-                "&cNecesitas una {0}&c para esta crate.");
+                "<g>You need a</g> {0}&7 <g>to use this crate.</g>",
+                "<g>Je hebt een</g> {0}&7 <g>nodig voor deze crate.</g>",
+                "<g>Du brauchst einen</g> {0}&7 <g>für diese Crate.</g>",
+                "<g>Il te faut une</g> {0}&7 <g>pour cette crate.</g>",
+                "<g>Necesitas una</g> {0}&7 <g>para esta crate.</g>");
         m("reward",
-                "You received {0}&7.",
-                "Je hebt {0}&7 ontvangen.",
-                "Du hast {0}&7 erhalten.",
-                "Tu as reçu {0}&7.",
-                "Has recibido {0}&7.");
+                "<g>You received</g> {0}&7.",
+                "<g>Je hebt</g> {0}&7 <g>ontvangen.</g>",
+                "<g>Du hast</g> {0}&7 <g>erhalten.</g>",
+                "<g>Tu as reçu</g> {0}&7.",
+                "<g>Has recibido</g> {0}&7.");
         m("key_given",
                 "Gave <g>{0}x</g> {1}&7 to <g>{2}</g>.",
                 "<g>{0}x</g> {1}&7 gegeven aan <g>{2}</g>.",
