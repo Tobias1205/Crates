@@ -536,6 +536,38 @@ public final class CrateManager {
         return copy;
     }
 
+    /** Haalt tot {@code amount} physical keys uit de inventory (inclusief offhand). Geeft terug hoeveel er weg zijn. */
+    public int removePhysicalKeys(Player p, Crate c, int amount) {
+        int left = amount;
+        PlayerInventory inv = p.getInventory();
+        for (int i = 0; i < 36 && left > 0; i++) {
+            ItemStack it = inv.getItem(i);
+            if (it == null || !c.id.equals(keyId(it))) continue;
+            int take = Math.min(left, it.getAmount());
+            left -= take;
+            if (take >= it.getAmount()) {
+                inv.setItem(i, null);
+            } else {
+                ItemStack copy = it.clone();
+                copy.setAmount(it.getAmount() - take);
+                inv.setItem(i, copy);
+            }
+        }
+        ItemStack off = inv.getItemInOffHand();
+        if (left > 0 && c.id.equals(keyId(off))) {
+            int take = Math.min(left, off.getAmount());
+            left -= take;
+            if (take >= off.getAmount()) {
+                inv.setItemInOffHand(null);
+            } else {
+                ItemStack copy = off.clone();
+                copy.setAmount(off.getAmount() - take);
+                inv.setItemInOffHand(copy);
+            }
+        }
+        return amount - left;
+    }
+
     public void giveKeys(Player p, Crate c, int amount) {
         Map<Integer, ItemStack> left = p.getInventory().addItem(createKey(c, amount));
         for (ItemStack rest : left.values()) {

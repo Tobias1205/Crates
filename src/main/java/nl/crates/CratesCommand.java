@@ -101,12 +101,13 @@ public final class CratesCommand implements TabExecutor {
                 crate, pos.world(), String.valueOf(pos.x()), String.valueOf(pos.y()), String.valueOf(pos.z())))));
     }
 
-    /** /crates key give <virtual|physical> <speler> <crate> [aantal] */
+    /** /crates key <give|take> <virtual|physical> <speler> <crate> [aantal] */
     private void key(CommandSender s, String[] a) {
-        if (a.length < 5 || !a[1].equalsIgnoreCase("give")) {
+        if (a.length < 5 || !(a[1].equalsIgnoreCase("give") || a[1].equalsIgnoreCase("take"))) {
             Msg.send(s, "usage_key");
             return;
         }
+        boolean take = a[1].equalsIgnoreCase("take");
         boolean virtual;
         if (a[2].equalsIgnoreCase("virtual")) {
             virtual = true;
@@ -138,6 +139,11 @@ public final class CratesCommand implements TabExecutor {
         Player online = Bukkit.getPlayerExact(a[3]);
         String amountText = String.valueOf(amount);
 
+        if (take) {
+            takeKeys(s, a[3], online, c, amount, virtual);
+            return;
+        }
+
         if (virtual) {
             // virtual keys kunnen ook naar spelers die offline zijn (zolang de server ze kent)
             OfflinePlayer target = online != null ? online : Bukkit.getOfflinePlayerIfCached(a[3]);
@@ -156,6 +162,37 @@ public final class CratesCommand implements TabExecutor {
             manager.giveKeys(online, c, amount);
             Msg.send(s, "key_given_physical", amountText, c.keyName(), online.getName());
             Msg.send(online, "key_received_physical", amountText, c.keyName());
+        }
+    }
+
+    /** /crates key take: haalt virtual of physical keys van een speler af (hoogstens wat de speler heeft). */
+    private void takeKeys(CommandSender s, String name, Player online, Crate c, int amount, boolean virtual) {
+        String kind = Msg.text(s, virtual ? "kind_virtual" : "kind_physical");
+        int removed;
+        if (virtual) {
+            OfflinePlayer target = online != null ? online : Bukkit.getOfflinePlayerIfCached(name);
+            if (target == null) {
+                Msg.send(s, "player_not_found", name);
+                return;
+            }
+            int has = manager.virtual().get(target.getUniqueId(), c.id);
+            removed = Math.min(amount, has);
+            if (removed > 0) manager.virtual().add(target.getUniqueId(), c.id, -removed);
+        } else {
+            if (online == null) {
+                Msg.send(s, "player_not_found", name);
+                return;
+            }
+            removed = manager.removePhysicalKeys(online, c, amount);
+        }
+        String shownName = online != null ? online.getName() : name;
+        if (removed <= 0) {
+            Msg.send(s, "no_keys_to_take", shownName, c.keyName(), kind);
+            return;
+        }
+        Msg.send(s, virtual ? "key_taken_virtual" : "key_taken_physical", String.valueOf(removed), c.keyName(), shownName);
+        if (online != null) {
+            Msg.send(online, virtual ? "key_lost_virtual" : "key_lost_physical", String.valueOf(removed), c.keyName());
         }
     }
 
@@ -210,7 +247,7 @@ public final class CratesCommand implements TabExecutor {
         }
         if (a.length == 3 && sub.equals("hologram")) return filter(List.of("on", "off"), a[2]);
         if (sub.equals("key")) {
-            if (a.length == 2) return filter(List.of("give"), a[1]);
+            if (a.length == 2) return filter(List.of("give", "take"), a[1]);
             if (a.length == 3) return filter(List.of("virtual", "physical"), a[2]);
             if (a.length == 4) {
                 List<String> names = new ArrayList<>();

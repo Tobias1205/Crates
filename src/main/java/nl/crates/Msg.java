@@ -130,35 +130,35 @@ public final class Msg {
 
     static {
         m("no_permission",
-                "You don't have permission to do that.",
-                "Je hebt hier geen toestemming voor.",
-                "Dafür hast du keine Berechtigung.",
-                "Tu n'as pas la permission de faire ça.",
-                "No tienes permiso para hacer eso.");
+                "&cYou don't have permission to do that.",
+                "&cJe hebt hier geen toestemming voor.",
+                "&cDafür hast du keine Berechtigung.",
+                "&cTu n'as pas la permission de faire ça.",
+                "&cNo tienes permiso para hacer eso.");
         m("players_only",
-                "Only players can use this command.",
-                "Alleen spelers kunnen dit commando gebruiken.",
-                "Nur Spieler können diesen Befehl benutzen.",
-                "Seuls les joueurs peuvent utiliser cette commande.",
-                "Solo los jugadores pueden usar este comando.");
+                "&cOnly players can use this command.",
+                "&cAlleen spelers kunnen dit commando gebruiken.",
+                "&cNur Spieler können diesen Befehl benutzen.",
+                "&cSeuls les joueurs peuvent utiliser cette commande.",
+                "&cSolo los jugadores pueden usar este comando.");
         m("usage",
-                "Usage: /crates <link|unlink|list|key|open|hologram|reload>",
-                "Gebruik: /crates <link|unlink|list|key|open|hologram|reload>",
-                "Verwendung: /crates <link|unlink|list|key|open|hologram|reload>",
-                "Utilisation : /crates <link|unlink|list|key|open|hologram|reload>",
-                "Uso: /crates <link|unlink|list|key|open|hologram|reload>");
+                "&cUsage: &f/crates <link|unlink|list|key|open|hologram|reload>",
+                "&cGebruik: &f/crates <link|unlink|list|key|open|hologram|reload>",
+                "&cVerwendung: &f/crates <link|unlink|list|key|open|hologram|reload>",
+                "&cUtilisation : &f/crates <link|unlink|list|key|open|hologram|reload>",
+                "&cUso: &f/crates <link|unlink|list|key|open|hologram|reload>");
         m("usage_key",
-                "Usage: /crates key give <virtual|physical> <player> <crate> [amount]",
-                "Gebruik: /crates key give <virtual|physical> <speler> <crate> [aantal]",
-                "Verwendung: /crates key give <virtual|physical> <Spieler> <Crate> [Anzahl]",
-                "Utilisation : /crates key give <virtual|physical> <joueur> <crate> [quantité]",
-                "Uso: /crates key give <virtual|physical> <jugador> <crate> [cantidad]");
+                "&cUsage: &f/crates key <give|take> <virtual|physical> <player> <crate> [amount]",
+                "&cGebruik: &f/crates key <give|take> <virtual|physical> <speler> <crate> [aantal]",
+                "&cVerwendung: &f/crates key <give|take> <virtual|physical> <Spieler> <Crate> [Anzahl]",
+                "&cUtilisation : &f/crates key <give|take> <virtual|physical> <joueur> <crate> [quantité]",
+                "&cUso: &f/crates key <give|take> <virtual|physical> <jugador> <crate> [cantidad]");
         m("usage_hologram",
-                "Usage: /crates hologram <crate> <on|off>",
-                "Gebruik: /crates hologram <crate> <on|off>",
-                "Verwendung: /crates hologram <Crate> <on|off>",
-                "Utilisation : /crates hologram <crate> <on|off>",
-                "Uso: /crates hologram <crate> <on|off>");
+                "&cUsage: &f/crates hologram <crate> <on|off>",
+                "&cGebruik: &f/crates hologram <crate> <on|off>",
+                "&cVerwendung: &f/crates hologram <Crate> <on|off>",
+                "&cUtilisation : &f/crates hologram <crate> <on|off>",
+                "&cUso: &f/crates hologram <crate> <on|off>");
         m("hologram_on",
                 "The hologram of the <g>{0}</g> crate is now on.",
                 "Het hologram van de <g>{0}</g> crate staat nu aan.",
@@ -171,12 +171,44 @@ public final class Msg {
                 "Das Hologramm der <g>{0}</g>-Crate ist jetzt aus.",
                 "L'hologramme de la crate <g>{0}</g> est maintenant désactivé.",
                 "El holograma de la crate <g>{0}</g> ahora está desactivado.");
-        m("keyall_next",
-                "&7next key in <g>{0}</g>",
-                "&7volgende key over <g>{0}</g>",
-                "&7nächster Key in <g>{0}</g>",
-                "&7prochaine key dans <g>{0}</g>",
-                "&7próxima key en <g>{0}</g>");
+        m("keyall_received",
+                "You received <g>{0}x</g> {1}&7 from keyall. Next key in <g>{2}</g>.",
+                "Je hebt <g>{0}x</g> {1}&7 ontvangen van keyall. Volgende key over <g>{2}</g>.",
+                "Du hast <g>{0}x</g> {1}&7 von Keyall erhalten. Nächster Key in <g>{2}</g>.",
+                "Tu as reçu <g>{0}x</g> {1}&7 via keyall. Prochaine key dans <g>{2}</g>.",
+                "Has recibido <g>{0}x</g> {1}&7 de keyall. Próxima key en <g>{2}</g>.");
+        m("key_taken_virtual",
+                "Took <g>{0}x</g> {1}&7 (virtual) from <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (virtueel) afgenomen van <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (virtuell) von <g>{2}</g> entfernt.",
+                "<g>{0}x</g> {1}&7 (virtuelle) retiré à <g>{2}</g>.",
+                "Se quitaron <g>{0}x</g> {1}&7 (virtual) a <g>{2}</g>.");
+        m("key_taken_physical",
+                "Took <g>{0}x</g> {1}&7 (physical) from <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (fysiek) afgenomen van <g>{2}</g>.",
+                "<g>{0}x</g> {1}&7 (physisch) von <g>{2}</g> entfernt.",
+                "<g>{0}x</g> {1}&7 (physique) retiré à <g>{2}</g>.",
+                "Se quitaron <g>{0}x</g> {1}&7 (físico) a <g>{2}</g>.");
+        m("key_lost_virtual",
+                "<g>{0}x</g> {1}&7 (virtual) was removed from your keys.",
+                "<g>{0}x</g> {1}&7 (virtueel) is van je keys afgenomen.",
+                "<g>{0}x</g> {1}&7 (virtuell) wurde aus deinen Keys entfernt.",
+                "<g>{0}x</g> {1}&7 (virtuelle) a été retiré de tes clés.",
+                "Se quitaron <g>{0}x</g> {1}&7 (virtual) de tus llaves.");
+        m("key_lost_physical",
+                "<g>{0}x</g> {1}&7 (physical) was removed from your inventory.",
+                "<g>{0}x</g> {1}&7 (fysiek) is uit je inventory gehaald.",
+                "<g>{0}x</g> {1}&7 (physisch) wurde aus deinem Inventar entfernt.",
+                "<g>{0}x</g> {1}&7 (physique) a été retiré de ton inventaire.",
+                "Se quitaron <g>{0}x</g> {1}&7 (físico) de tu inventario.");
+        m("no_keys_to_take",
+                "&c{0} has no {1}&c ({2}).",
+                "&c{0} heeft geen {1}&c ({2}).",
+                "&c{0} hat keinen {1}&c ({2}).",
+                "&c{0} n'a pas de {1}&c ({2}).",
+                "&c{0} no tiene {1}&c ({2}).");
+        m("kind_virtual", "virtual", "virtueel", "virtuell", "virtuelle", "virtual");
+        m("kind_physical", "physical", "fysiek", "physisch", "physique", "físico");
         m("key_given_virtual",
                 "Gave <g>{0}x</g> {1}&7 (virtual) to <g>{2}</g>.",
                 "<g>{0}x</g> {1}&7 (virtueel) gegeven aan <g>{2}</g>.",
@@ -208,11 +240,11 @@ public final class Msg {
                 "<g>Tes clés virtuelles :</g>",
                 "<g>Tus llaves virtuales:</g>");
         m("keys_none",
-                "You have no virtual keys.",
-                "Je hebt geen virtuele keys.",
-                "Du hast keine virtuellen Keys.",
-                "Tu n'as aucune clé virtuelle.",
-                "No tienes llaves virtuales.");
+                "&cYou have no virtual keys.",
+                "&cJe hebt geen virtuele keys.",
+                "&cDu hast keine virtuellen Keys.",
+                "&cTu n'as aucune clé virtuelle.",
+                "&cNo tienes llaves virtuales.");
         String keysEntry = "&8- {0}&7: <g>{1}</g>";
         m("keys_entry", keysEntry, keysEntry, keysEntry, keysEntry, keysEntry);
         m("confirm_title",
@@ -252,17 +284,17 @@ public final class Msg {
                 "<g>{0}</g> &7vient de gagner {1}&7 dans la {2}&7 !",
                 "<g>{0}</g> &7acaba de ganar {1}&7 de la {2}&7!");
         m("unknown_crate",
-                "Unknown crate: <g>{0}</g>",
-                "Onbekende crate: <g>{0}</g>",
-                "Unbekannte Crate: <g>{0}</g>",
-                "Crate inconnue : <g>{0}</g>",
-                "Crate desconocida: <g>{0}</g>");
+                "&cUnknown crate: &f{0}",
+                "&cOnbekende crate: &f{0}",
+                "&cUnbekannte Crate: &f{0}",
+                "&cCrate inconnue : &f{0}",
+                "&cCrate desconocida: &f{0}");
         m("not_looking",
-                "Look at a block first.",
-                "Kijk eerst naar een blok.",
-                "Sieh zuerst einen Block an.",
-                "Regarde d'abord un bloc.",
-                "Mira primero un bloque.");
+                "&cLook at a block first.",
+                "&cKijk eerst naar een blok.",
+                "&cSieh zuerst einen Block an.",
+                "&cRegarde d'abord un bloc.",
+                "&cMira primero un bloque.");
         m("linked",
                 "This block is now linked to the <g>{0}</g> crate.",
                 "Dit blok is nu gekoppeld aan de <g>{0}</g> crate.",
@@ -276,17 +308,17 @@ public final class Msg {
                 "Ce bloc n'est plus lié à une crate.",
                 "Este bloque ya no está vinculado a una crate.");
         m("not_linked",
-                "This block is not linked to a crate.",
-                "Dit blok is niet gekoppeld aan een crate.",
-                "Dieser Block ist mit keiner Crate verknüpft.",
-                "Ce bloc n'est lié à aucune crate.",
-                "Este bloque no está vinculado a ninguna crate.");
+                "&cThis block is not linked to a crate.",
+                "&cDit blok is niet gekoppeld aan een crate.",
+                "&cDieser Block ist mit keiner Crate verknüpft.",
+                "&cCe bloc n'est lié à aucune crate.",
+                "&cEste bloque no está vinculado a ninguna crate.");
         m("no_key",
-                "You need a {0}&7 to use this crate.",
-                "Je hebt een {0}&7 nodig voor deze crate.",
-                "Du brauchst einen {0}&7 für diese Crate.",
-                "Il te faut une {0}&7 pour cette crate.",
-                "Necesitas una {0}&7 para esta crate.");
+                "&cYou need a {0}&c to use this crate.",
+                "&cJe hebt een {0}&c nodig voor deze crate.",
+                "&cDu brauchst einen {0}&c für diese Crate.",
+                "&cIl te faut une {0}&c pour cette crate.",
+                "&cNecesitas una {0}&c para esta crate.");
         m("reward",
                 "You received {0}&7.",
                 "Je hebt {0}&7 ontvangen.",
@@ -312,35 +344,35 @@ public final class Msg {
                 "Configuration rechargée.",
                 "Configuración recargada.");
         m("break_denied",
-                "This block is a crate. Use /crates unlink to remove it.",
-                "Dit blok is een crate. Gebruik /crates unlink om hem te verwijderen.",
-                "Dieser Block ist eine Crate. Benutze /crates unlink, um ihn zu entfernen.",
-                "Ce bloc est une crate. Utilise /crates unlink pour le retirer.",
-                "Este bloque es una crate. Usa /crates unlink para quitarlo.");
+                "&cThis block is a crate. Use &f/crates unlink &cto remove it.",
+                "&cDit blok is een crate. Gebruik &f/crates unlink &com hem te verwijderen.",
+                "&cDieser Block ist eine Crate. Benutze &f/crates unlink&c, um ihn zu entfernen.",
+                "&cCe bloc est une crate. Utilise &f/crates unlink &cpour le retirer.",
+                "&cEste bloque es una crate. Usa &f/crates unlink &cpara quitarlo.");
         m("busy",
-                "You are already opening a crate.",
-                "Je bent al een crate aan het openen.",
-                "Du öffnest bereits eine Crate.",
-                "Tu es déjà en train d'ouvrir une crate.",
-                "Ya estás abriendo una crate.");
+                "&cYou are already opening a crate.",
+                "&cJe bent al een crate aan het openen.",
+                "&cDu öffnest bereits eine Crate.",
+                "&cTu es déjà en train d'ouvrir une crate.",
+                "&cYa estás abriendo una crate.");
         m("player_not_found",
-                "Player not found: <g>{0}</g>",
-                "Speler niet gevonden: <g>{0}</g>",
-                "Spieler nicht gefunden: <g>{0}</g>",
-                "Joueur introuvable : <g>{0}</g>",
-                "Jugador no encontrado: <g>{0}</g>");
+                "&cPlayer not found: &f{0}",
+                "&cSpeler niet gevonden: &f{0}",
+                "&cSpieler nicht gefunden: &f{0}",
+                "&cJoueur introuvable : &f{0}",
+                "&cJugador no encontrado: &f{0}");
         m("invalid_amount",
-                "Invalid amount.",
-                "Ongeldig aantal.",
-                "Ungültige Anzahl.",
-                "Quantité invalide.",
-                "Cantidad no válida.");
+                "&cInvalid amount.",
+                "&cOngeldig aantal.",
+                "&cUngültige Anzahl.",
+                "&cQuantité invalide.",
+                "&cCantidad no válida.");
         m("list_empty",
-                "No blocks are linked to a crate yet.",
-                "Er zijn nog geen blokken aan een crate gekoppeld.",
-                "Es sind noch keine Blöcke mit einer Crate verknüpft.",
-                "Aucun bloc n'est encore lié à une crate.",
-                "Todavía no hay bloques vinculados a una crate.");
+                "&cNo blocks are linked to a crate yet.",
+                "&cEr zijn nog geen blokken aan een crate gekoppeld.",
+                "&cEs sind noch keine Blöcke mit einer Crate verknüpft.",
+                "&cAucun bloc n'est encore lié à une crate.",
+                "&cTodavía no hay bloques vinculados a una crate.");
         m("list_header",
                 "<g>Linked crates:</g>",
                 "<g>Gekoppelde crates:</g>",
