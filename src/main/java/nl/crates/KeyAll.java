@@ -161,8 +161,11 @@ public final class KeyAll {
             manager.giveKeys(p, c, total);
         }
         // melding: een klein kader in de chat, plus dezelfde regel kort in de actionbar
-        String line = "<g>+" + total + "x</g> " + c.keyName();
-        Msg.send(p, "keyall_received", String.valueOf(total), c.keyName(), formatInterval(e.intervalMs()));
+        String line = "<g>+" + total + "x " + c.keyName() + "</g>";
+        p.sendMessage(Msg.c("&8&m      &r <g>" + Msg.smallCaps("keyall") + "</g> &8&m      "));
+        p.sendMessage(Msg.c("  " + line));
+        p.sendMessage(Msg.c("  " + Msg.text(p, "keyall_next", formatInterval(e.intervalMs()))));
+        p.sendMessage(Msg.c("&8&m                    "));
         p.sendActionBar(Msg.c(line));
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
     }

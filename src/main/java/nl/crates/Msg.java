@@ -53,6 +53,7 @@ public final class Msg {
 
     /** Geeft elke letter een eigen kleur uit het kleurverloop; daarna terug naar grijs (&7). */
     static String gradient(String text) {
+        text = HEX.matcher(text).replaceAll("");
         text = LEGACY.matcher(text).replaceAll("");
         int[][] cols = theme;
         int n = text.length();
@@ -171,12 +172,12 @@ public final class Msg {
                 "Das Hologramm der <g>{0}</g>-Crate ist jetzt aus.",
                 "L'hologramme de la crate <g>{0}</g> est maintenant désactivé.",
                 "El holograma de la crate <g>{0}</g> ahora está desactivado.");
-        m("keyall_received",
-                "You received <g>{0}x</g> {1}&7 from keyall. Next key in <g>{2}</g>.",
-                "Je hebt <g>{0}x</g> {1}&7 ontvangen van keyall. Volgende key over <g>{2}</g>.",
-                "Du hast <g>{0}x</g> {1}&7 von Keyall erhalten. Nächster Key in <g>{2}</g>.",
-                "Tu as reçu <g>{0}x</g> {1}&7 via keyall. Prochaine key dans <g>{2}</g>.",
-                "Has recibido <g>{0}x</g> {1}&7 de keyall. Próxima key en <g>{2}</g>.");
+        m("keyall_next",
+                "&7next key in <g>{0}</g>",
+                "&7volgende key over <g>{0}</g>",
+                "&7nächster Key in <g>{0}</g>",
+                "&7prochaine key dans <g>{0}</g>",
+                "&7próxima key en <g>{0}</g>");
         m("key_taken_virtual",
                 "Took <g>{0}x</g> {1}&7 (virtual) from <g>{2}</g>.",
                 "<g>{0}x</g> {1}&7 (virtueel) afgenomen van <g>{2}</g>.",
@@ -222,17 +223,17 @@ public final class Msg {
                 "<g>{0}x</g> {1}&7 (physique) donné à <g>{2}</g>.",
                 "Se dieron <g>{0}x</g> {1}&7 (físico) a <g>{2}</g>.");
         m("key_received_virtual",
-                "You received <g>{0}x</g> {1}&7 (virtual).",
-                "Je hebt <g>{0}x</g> {1}&7 (virtueel) ontvangen.",
-                "Du hast <g>{0}x</g> {1}&7 (virtuell) erhalten.",
-                "Tu as reçu <g>{0}x</g> {1}&7 (virtuelle).",
-                "Has recibido <g>{0}x</g> {1}&7 (virtual).");
+                "You received <g>{0}x</g> <g>{1}</g> &7(virtual).",
+                "Je hebt <g>{0}x</g> <g>{1}</g> &7(virtueel) ontvangen.",
+                "Du hast <g>{0}x</g> <g>{1}</g> &7(virtuell) erhalten.",
+                "Tu as reçu <g>{0}x</g> <g>{1}</g> &7(virtuelle).",
+                "Has recibido <g>{0}x</g> <g>{1}</g> &7(virtual).");
         m("key_received_physical",
-                "You received <g>{0}x</g> {1}&7 (physical).",
-                "Je hebt <g>{0}x</g> {1}&7 (fysiek) ontvangen.",
-                "Du hast <g>{0}x</g> {1}&7 (physisch) erhalten.",
-                "Tu as reçu <g>{0}x</g> {1}&7 (physique).",
-                "Has recibido <g>{0}x</g> {1}&7 (físico).");
+                "You received <g>{0}x</g> <g>{1}</g> &7(physical).",
+                "Je hebt <g>{0}x</g> <g>{1}</g> &7(fysiek) ontvangen.",
+                "Du hast <g>{0}x</g> <g>{1}</g> &7(physisch) erhalten.",
+                "Tu as reçu <g>{0}x</g> <g>{1}</g> &7(physique).",
+                "Has recibido <g>{0}x</g> <g>{1}</g> &7(físico).");
         m("keys_header",
                 "<g>Your virtual keys:</g>",
                 "<g>Jouw virtuele keys:</g>",
@@ -332,11 +333,11 @@ public final class Msg {
                 "<g>{0}x</g> {1}&7 donné à <g>{2}</g>.",
                 "Se dieron <g>{0}x</g> {1}&7 a <g>{2}</g>.");
         m("key_received",
-                "You received <g>{0}x</g> {1}&7.",
-                "Je hebt <g>{0}x</g> {1}&7 ontvangen.",
-                "Du hast <g>{0}x</g> {1}&7 erhalten.",
-                "Tu as reçu <g>{0}x</g> {1}&7.",
-                "Has recibido <g>{0}x</g> {1}&7.");
+                "You received <g>{0}x</g> <g>{1}</g>&7.",
+                "Je hebt <g>{0}x</g> <g>{1}</g> &7ontvangen.",
+                "Du hast <g>{0}x</g> <g>{1}</g> &7erhalten.",
+                "Tu as reçu <g>{0}x</g> <g>{1}</g>&7.",
+                "Has recibido <g>{0}x</g> <g>{1}</g>&7.");
         m("reloaded",
                 "Configuration reloaded.",
                 "Configuratie opnieuw geladen.",
